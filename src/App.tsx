@@ -1,12 +1,21 @@
+import {
+  QueryProvider,
+  AuthProvider,
+  RouteProvider as Routes,
+  LangProvider,
+  PrototypeExtensionsProvider,
+} from "./providers";
 
-
-function App() {
-
+export default function App(): React.ReactElement {
   return (
-    <>
-     App
-    </>
-  )
+    <PrototypeExtensionsProvider>
+      <LangProvider>
+        <QueryProvider>
+          <AuthProvider>
+            <Routes />
+          </AuthProvider>
+        </QueryProvider>
+      </LangProvider>
+    </PrototypeExtensionsProvider>
+  );
 }
-
-export default App
