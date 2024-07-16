@@ -1,4 +1,4 @@
-import routes from "./routes";
+import  routes  from "./routes";
 import { refreshToken } from "./api";
 
-export { routes, refreshToken };
+export default { routes, refreshToken };

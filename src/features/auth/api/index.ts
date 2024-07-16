@@ -7,7 +7,7 @@ export async function login(data: {
   password: string;
 }): Promise<AuthResponse> {
   const res: AuthResponse = await request({
-    url: "/account/me/",
+    url: "token/",
     method: "post",
     data,
   });
@@ -19,7 +19,7 @@ export async function refreshToken(data: {
   refresh: string;
 }): Promise<AxiosResponse<AuthResponse>> {
   const res = await request({
-    url: "/account/me/refresh/",
+    url: "token/refresh/",
     method: "post",
     data,
   });

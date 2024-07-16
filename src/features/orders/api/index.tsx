@@ -1,0 +1,33 @@
+import request from "../../../utils/axios";
+import type { ListResponse } from "../../../types";
+import type {
+    // Category,
+    // ChequeData,
+    // CreateOrderData,
+    // EditOrderData,
+    Order,
+    OrdersParams,
+    // PaymentType,
+    // Position,
+    // UpdateOrderData
+} from "../types"
+
+export async function getOrders(
+  params?: OrdersParams
+): Promise<ListResponse<Order[]>> {
+  const res: ListResponse<Order[]> = await request({
+    url: "orders/",
+    method: "get",
+    params,
+  });
+  return res;
+}
+
+export async function getOrder(id ?: number): Promise<Order> {
+    const res: Order = await request({
+      url: `orders/${id}/`,
+      method: "get",
+    });
+    return res;
+}
+

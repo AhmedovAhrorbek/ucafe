@@ -1,7 +1,7 @@
 import axios from "axios";
 import type { AxiosError } from "axios";
 import { settings } from "../configs/settings";
-import  { refreshToken } from "../features/auth";
+import { refreshToken } from "../features/auth/api";
 
 const request = axios.create({
     baseURL:settings.baseUrl,
