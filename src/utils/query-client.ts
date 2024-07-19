@@ -7,7 +7,6 @@ const queryClient = new QueryClient({
       staleTime: settings.staleTime,
       refetchOnWindowFocus: false,
       retry: false,
-      cacheTime: 1000 * 60 * 60 * 24, // 24 hours
     },
   },
 });

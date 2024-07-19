@@ -1,6 +1,6 @@
 import type {
   BaseParams,
-  DeliveryStatus,
+  // DeliveryStatus,
   OrderStatus,
   OrderType,
   PaymentStatus,
@@ -9,24 +9,13 @@ import type {
 
 interface Order {
   id: number;
-  type: OrderType;
-  created_at: string;
-  is_user_pay: boolean;
-  items: OrderItem[];
-  status: OrderStatus;
-  delivery_status: DeliveryStatus;
-  user: User;
-  payment_status: PaymentStatus;
-  payment_type: PaymentType;
-  total: number;
-  address: string;
-  block: string;
-  cabinet: string;
-  cash: number;
-  phone: string;
-  position: string;
-  source: string;
-  transaction_link: string;
+  delivery_status: string;
+  full_price: string;
+  items: [];
+  order_type: string;
+  pay_type: string;
+  status: string;
+  status_pay: string;
 }
 
 interface OrderItem {
@@ -51,27 +40,22 @@ interface Product {
   };
 }
 
-interface User {
-  id: number;
-  phone: string;
-  first_name: string;
-  username: string;
-  is_active: boolean;
-  password: string;
-  position: string;
-}
+// interface User {
+//   id: number;
+//   phone: string;
+//   first_name: string;
+//   username: string;
+//   is_active: boolean;
+//   password: string;
+//   position: string;
+// }
 
-interface CreateOrderData {
-  products?: Array<{ product: number; qty: number }>;
-  type?: OrderType;
-  payment_type?: number;
-  payment_status?: PaymentStatus;
-  block?: string;
-  phone?: string;
-  cabinet?: string;
-  position?: string;
-  source: "web_admin";
-  created_at?: string;
+ interface CreateOrderData {
+  pay_type: string;
+  status: string;
+  order_type: string;
+  items: { food_id: number; quantity: number }[];
+  status_pay: string;
 }
 
 interface UpdateOrderData {
@@ -156,8 +140,21 @@ interface OrdersState {
   move: () => void;
   getList: (id: DroppableID) => ListName;
 }
+interface Food {
+  results:[
+     id: number,
+     name: string,
+     price: number,
+     count: number,
+     is_active: boolean,
+     category: string,
+     photos: string[],
+  ],
+  
+}
 
 export type {
+  Food,
   Order,
   Product,
   CreateOrderData,

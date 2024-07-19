@@ -50,13 +50,14 @@ export default function DefaultLayout(props: Props): React.ReactElement {
 
     const location = useLocation();
      const linkStyle = `
+
     text-gray-700 hover:text-[rgba(85,102,255,1)] font-sans text-[16px] font-medium leading-[19.09px] text-left
     relative
     transition duration-300
   `;
 
      const activeLinkStyle = `
-    text-[rgba(85,102,255,1)] after:absolute after:content-[''] after:bg-red-500 after:w-2 after:h-2 after:rounded-full
+     text-[#5566FF] after:absolute after:content-[''] after:bg-red-500 after:w-2 after:h-2 after:rounded-full
     after:bottom-[-10px] after:left-1/2 after:transform after:-translate-x-1/2
     border-b-2 border-[rgba(85,102,255,1)]
   `;
@@ -126,7 +127,7 @@ export default function DefaultLayout(props: Props): React.ReactElement {
             </Dropdown>
           </div>
         </Header>
-        <Content className="bg-white">{children}</Content>
+        <Content>{children}</Content>
       </div>
     </Layout>
   );

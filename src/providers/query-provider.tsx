@@ -11,7 +11,7 @@ export default function QueryProvider(props: Props): React.ReactElement {
 
   return (
     <QueryClientProvider client={queryClient}>
-      <ReactQueryDevtools initialIsOpen={false} position="bottom-right" />
+      <ReactQueryDevtools initialIsOpen={false} />
       {children}
     </QueryClientProvider>
   );

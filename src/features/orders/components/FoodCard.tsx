@@ -1,11 +1,11 @@
 import React from "react";
-import { Checkbox, Button } from "antd";
+import { Checkbox, Button, Image } from "antd";
 
 interface CardProps {
   imgSrc: string;
   foodName: string;
-  title: string;
   count: number;
+  price: number;
   onIncrement: () => void;
   onDecrement: () => void;
 }
@@ -13,16 +13,21 @@ interface CardProps {
 const FoodCard: React.FC<CardProps> = ({
   imgSrc,
   foodName,
-  title,
   count,
+  price,
   onIncrement,
   onDecrement,
 }) => {
+
+  
+
   return (
-    <div className=" bg-white flex items-center justify-between w-[931px] h-[89px] p-[15px]  border border-solid border-#ECEDEE rounded-[8px] mt-[20px] ml-[20px]">
+    <div className="bg-white flex items-center justify-between w-[931px] h-[89px] p-[15px] border border-solid border-#ECEDEE rounded-[8px] mt-[20px]">
       <div className="flex items-center gap-[15px]">
-        <Checkbox style={{ width: "24px", height: "24px" }} />
-        <img
+        <Checkbox checked={count > 0 ? true : false} />
+        <Image
+          width="60px"
+          height="60px"
           src={imgSrc}
           alt={foodName}
           className="w-[50px] h-[50px] object-cover rounded-[4px]"
@@ -31,13 +36,13 @@ const FoodCard: React.FC<CardProps> = ({
           <div className="font-sfpro text-[16px] font-medium leading-[19.09px] text-left">
             {foodName}
           </div>
-          <div className="font-sfpro text-[14px] font-normal leading-[16.71px] text-left text-[#555]">
-            {title}
+          <div className="font-sfpro text-[14px] font-medium leading-[16.71px] text-left text-gray-600">
+              {price} сум
           </div>
         </div>
       </div>
       <div className="flex items-center gap-[8px] rounded-full p-1 bg-[#ECEDEE]">
-        <Button className="rounded-[50%] w-[24px] " onClick={onDecrement}>
+        <Button className="rounded-[50%] w-[24px]" onClick={onDecrement}>
           -
         </Button>
         <span className="font-sfpro text-[14px] font-medium leading-[16.71px] text-center">
