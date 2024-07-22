@@ -10,6 +10,7 @@ import { Order } from "../../types";
 import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
 import OrderCard from "../../components/OrderCard";
 import NoOrders from "../../components/NoOrders";
+import useOrdersState from "./state";
 
 const Orders = () => {
   const [newOrders, setNewOrders] = useState<Order[]>([]);
@@ -17,11 +18,13 @@ const Orders = () => {
   const [finishedOrders, setFinishedOrders] = useState<Order[]>([]);
   const navigate = useNavigate();
 
+  const { reorderState, move, getList } = useOrdersState();
+
   const { data: newOrdersData } = useQuery({
     queryKey: ["orders", "new"],
     queryFn: async () => {
       const res = await getOrders({ status: "new", page_size: 100 });
-      return res.results; // Ensure only results are returned
+      return res.results;
     },
   });
 
@@ -29,7 +32,7 @@ const Orders = () => {
     queryKey: ["orders", "processing"],
     queryFn: async () => {
       const res = await getOrders({ status: "processing", page_size: 100 });
-      return res.results; // Ensure only results are returned
+      return res.results;
     },
   });
 
@@ -37,7 +40,7 @@ const Orders = () => {
     queryKey: ["orders", "completed"],
     queryFn: async () => {
       const res = await getOrders({ status: "completed", page_size: 100 });
-      return res.results; // Ensure only results are returned
+      return res.results;
     },
   });
 
@@ -58,46 +61,82 @@ const Orders = () => {
 
     if (!destination) return;
 
-    const sourceClone = Array.from(
-      source.droppableId === "newOrders"
-        ? newOrders
-        : source.droppableId === "inProcessOrders"
-        ? inProcessOrders
-        : finishedOrders
+    const sourceList = {
+      newOrders,
+      inProcessOrders,
+      finishedOrders,
+    }[source.droppableId];
+
+    const destList = {
+      newOrders,
+      inProcessOrders,
+      finishedOrders,
+    }[destination.droppableId];
+
+    if (!sourceList || !destList) return;
+
+    const { source: updatedSourceList, destination: updatedDestList } = move(
+      sourceList,
+      destList,
+      source,
+      destination
     );
 
-    const destClone = Array.from(
-      destination.droppableId === "newOrders"
-        ? newOrders
-        : destination.droppableId === "inProcessOrders"
-        ? inProcessOrders
-        : finishedOrders
-    );
+    if (source.droppableId === destination.droppableId) {
+      const updatedList = reorderState(
+        updatedSourceList,
+        source.index,
+        destination.index
+      );
 
-    const [removed] = sourceClone.splice(source.index, 1);
-    destClone.splice(destination.index, 0, removed);
-
-    if (source.droppableId === "newOrders") {
-      setNewOrders(sourceClone);
-    } else if (source.droppableId === "inProcessOrders") {
-      setInProcessOrders(sourceClone);
+      switch (source.droppableId) {
+        case "newOrders":
+          setNewOrders(updatedList);
+          break;
+        case "inProcessOrders":
+          setInProcessOrders(updatedList);
+          break;
+        case "finishedOrders":
+          setFinishedOrders(updatedList);
+          break;
+        default:
+          break;
+      }
     } else {
-      setFinishedOrders(sourceClone);
-    }
+      switch (source.droppableId) {
+        case "newOrders":
+          setNewOrders(updatedSourceList);
+          break;
+        case "inProcessOrders":
+          setInProcessOrders(updatedSourceList);
+          break;
+        case "finishedOrders":
+          setFinishedOrders(updatedSourceList);
+          break;
+        default:
+          break;
+      }
 
-    if (destination.droppableId === "newOrders") {
-      setNewOrders(destClone);
-    } else if (destination.droppableId === "inProcessOrders") {
-      setInProcessOrders(destClone);
-    } else {
-      setFinishedOrders(destClone);
+      switch (destination.droppableId) {
+        case "newOrders":
+          setNewOrders(updatedDestList);
+          break;
+        case "inProcessOrders":
+          setInProcessOrders(updatedDestList);
+          break;
+        case "finishedOrders":
+          setFinishedOrders(updatedDestList);
+          break;
+        default:
+          break;
+      }
     }
   };
 
   return (
     <div>
       <div className="bg-white px-[24px] py-[15px] border-b border-gray-200 pb-5">
-        <div className="flex items-center justify-between ">
+        <div className="flex items-center justify-between">
           <h1 className="font-sf-pro-display text-[24px] font-semibold leading-[28.64px] text-left">
             Все заказы
           </h1>
@@ -131,20 +170,24 @@ const Orders = () => {
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className="bg-[#F5F5F5] w-[448px] rounded-tr-[8px] relative"
+                className="bg-[#F5F5F5] w-[448px] min-h-[600px] rounded-tr-[8px] relative"
               >
                 <p className="rounded-tr-[8px] absolute top-[-29px] left-0 bg-[#F5F5F5] px-3 py-1 text-medium">
                   Новые ({newOrders.length})
                 </p>
-                {newOrders ? (
+                {newOrders.length ? (
                   newOrders.map((order, index) => (
                     <Draggable
                       key={order.id}
                       draggableId={order.id.toString()}
                       index={index}
                     >
-                      {(provided) => (
-                        <OrderCard order={order} provided={provided} />
+                      {(provided, snapshot) => (
+                        <OrderCard
+                          order={order}
+                          provided={provided}
+                          isDragging={snapshot.isDragging}
+                        />
                       )}
                     </Draggable>
                   ))
@@ -163,7 +206,7 @@ const Orders = () => {
               <div
                 ref={provided.innerRef}
                 {...provided.droppableProps}
-                className="bg-[#F5F5F5] w-[448px] h-[712px] rounded-tr-[8px] relative"
+                className="bg-[#F5F5F5] w-[448px] rounded-tr-[8px] relative"
               >
                 <p className="rounded-tr-[8px] absolute top-[-29px] left-0 bg-[#F5F5F5] px-3 py-1 text-medium">
                   В процессе ({inProcessOrders.length})
@@ -175,8 +218,12 @@ const Orders = () => {
                       draggableId={order.id.toString()}
                       index={index}
                     >
-                      {(provided) => (
-                        <OrderCard order={order} provided={provided} />
+                      {(provided, snapshot) => (
+                        <OrderCard
+                          order={order}
+                          provided={provided}
+                          isDragging={snapshot.isDragging}
+                        />
                       )}
                     </Draggable>
                   ))
@@ -198,7 +245,7 @@ const Orders = () => {
                 className="bg-[#F5F5F5] w-[448px] rounded-tr-[8px] relative"
               >
                 <p className="rounded-tr-[8px] absolute top-[-29px] left-0 bg-[#F5F5F5] px-3 py-1 text-medium">
-                  Готовые ({finishedOrders.length})
+                  Готовые  ({finishedOrders.length})
                 </p>
                 {finishedOrders.length ? (
                   finishedOrders.map((order, index) => (
@@ -207,8 +254,12 @@ const Orders = () => {
                       draggableId={order.id.toString()}
                       index={index}
                     >
-                      {(provided) => (
-                        <OrderCard order={order} provided={provided} />
+                      {(provided, snapshot) => (
+                        <OrderCard
+                          order={order}
+                          provided={provided}
+                          isDragging={snapshot.isDragging}
+                        />
                       )}
                     </Draggable>
                   ))

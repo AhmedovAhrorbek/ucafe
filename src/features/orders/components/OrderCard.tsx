@@ -7,12 +7,13 @@ import type { Order } from "../types";
 interface ItemProps extends Order {
   onOrderClick: (id: number) => void;
   provided: any;
+  isDragging: boolean;
 }
 
-function Item(
+const Item = (
   props: ItemProps,
   ref: React.Ref<HTMLDivElement>
-): React.ReactElement {
+): React.ReactElement => {
   const {
     provided,
     id,
@@ -23,19 +24,18 @@ function Item(
     is_new,
     order_type,
     onOrderClick,
+    isDragging,
   } = props;
 
   return (
     <div
-      ref={(node) => {
-        ref && (typeof ref === "function" ? ref(node) : (ref.current = node));
-        provided.innerRef(node);
-      }}
+      ref={provided.innerRef} // Use provided.innerRef directly
       {...provided.draggableProps}
       {...provided.dragHandleProps}
       className={clsx(
         "bg-white m-4 p-4 rounded-lg flex flex-col gap-2 cursor-pointer hover:shadow",
-        is_new ? "outline outline-1 outline-[#5566FF]" : ""
+        is_new ? "outline outline-1 outline-[#5566FF]" : "",
+        isDragging ? "bg-gray-100" : "" // Optional: Style for dragging
       )}
       onClick={() => {
         onOrderClick(id);
@@ -53,7 +53,7 @@ function Item(
           ) : null}
         </h4>
         <span className="text-gray-400">
-          {moment(created_at).format("HH:MM")}
+          {moment(created_at).format("HH:mm")} {/* Fix time format */}
         </span>
       </div>
 
@@ -98,7 +98,7 @@ function Item(
       </div>
     </div>
   );
-}
+};
 
 const OrderCard = memo(forwardRef<HTMLDivElement, ItemProps>(Item));
 

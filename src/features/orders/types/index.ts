@@ -118,7 +118,7 @@ interface Position {
 
 type DroppableID = "droppable" | "droppable2" | "droppable3";
 
-type ListName = "new" | "in_process" | "finished";
+type ListName = "new" | "processing" | "completed";
 
 interface DropResult {
   source: { droppableId: DroppableID; index: number };
