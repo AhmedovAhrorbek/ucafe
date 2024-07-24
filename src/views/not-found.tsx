@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import { Button } from "antd";
+import NotFoundIcon from "../components/NotFoundIcon";
 
 export default function NotFound(): React.ReactElement {
 
@@ -12,7 +13,13 @@ export default function NotFound(): React.ReactElement {
     >
       <div className="w-1/4 text-center flex flex-col gap-6 items-center justify-center">
         <div className="flex flex-col gap-4 items-center justify-center">
-          <span>404 info</span>
+          <div>
+            <NotFoundIcon />
+          </div>
+          <span>
+            Страница, которую вы запрашиваете не существует. Возможно, она
+            устарела, была удалена или был введен неверный адрес
+          </span>
         </div>
 
         <Button
@@ -21,7 +28,7 @@ export default function NotFound(): React.ReactElement {
             navigate("/orders");
           }}
         >
-          go home
+          Обновить
         </Button>
       </div>
     </div>

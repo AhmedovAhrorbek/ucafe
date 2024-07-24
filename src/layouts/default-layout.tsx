@@ -50,23 +50,19 @@ export default function DefaultLayout(props: Props): React.ReactElement {
 
     const location = useLocation();
      const linkStyle = `
-
+    border-b-2 border-transparent
     text-gray-700 hover:text-[rgba(85,102,255,1)] font-sans text-[16px] font-medium leading-[19.09px] text-left
-    relative
+    relative 
     transition duration-300
   `;
 
-     const activeLinkStyle = `
-     text-[#5566FF] after:absolute after:content-[''] after:bg-red-500 after:w-2 after:h-2 after:rounded-full
-    after:bottom-[-10px] after:left-1/2 after:transform after:-translate-x-1/2
-    border-b-2 border-[rgba(85,102,255,1)]
-  `;
+     const activeLinkStyle = 'text-[rgba(85,102,255,1)] border-b-2 border-[rgba(85,102,255,1)]';
 
   return (
     <Layout className="min-h-screen">
       <div className="w-full">
         <Header
-          className="flex justify-between items-center shadow px-[24px] bg-[rgba(125,133,139,0.2)]"
+          className="flex justify-between items-center shadow px-[24px] bg-[rgba(125,133,139,0.2)] "
           style={{
             height: "70px",
             borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
@@ -95,9 +91,9 @@ export default function DefaultLayout(props: Props): React.ReactElement {
               Управление меню
             </Link>
             <Link
-              to="/order-history"
+              to="/orders-history"
               className={`${linkStyle} ${
-                location.pathname === "/order-history" ? activeLinkStyle : ""
+                location.pathname === "/orders-history" ? activeLinkStyle : ""
               }`}
             >
               История заказов

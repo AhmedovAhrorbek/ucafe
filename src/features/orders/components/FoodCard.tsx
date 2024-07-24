@@ -11,7 +11,7 @@ interface CardProps {
 }
 
 const FoodCard: React.FC<CardProps> = ({
-  imgSrc,
+  // imgSrc,
   foodName,
   count,
   price,
@@ -28,7 +28,7 @@ const FoodCard: React.FC<CardProps> = ({
         <Image
           width="60px"
           height="60px"
-          src={imgSrc}
+          // src={imgSrc}
           alt={foodName}
           className="w-[50px] h-[50px] object-cover rounded-[4px]"
         />

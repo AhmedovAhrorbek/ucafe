@@ -1,6 +1,6 @@
 import type { CustomRoute } from "../../types";
 import InternalServerError from "../../views/internet-server-error";
-import AllOrders from "./views/orders";
+import Orders from "./views/orders";
 import CreateOrder from "./views/create-order";
 import Container from "./components/container";
 
@@ -8,7 +8,7 @@ const allOrdersRoutes: CustomRoute = {
   id: "orders",
   title: "orders",
   path: "orders",
-  element: <Container of={<AllOrders />} />,
+  element: <Container of={<Orders />} />,
   errorElement: <InternalServerError />,
   children: [
     {

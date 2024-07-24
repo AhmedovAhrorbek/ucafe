@@ -7,15 +7,18 @@ import { useMutation } from "@tanstack/react-query";
 import queryClient from "../../../../utils/query-client";
 import { getFoods, createOrder } from "../../api";
 import FoodCard from "../../components/FoodCard";
-import CoffeeIcon from "../../components/barIcon";
-import EggsIcon from "../../components/breakfastIcon";
-import DishIcon from "../../components/lunchIcon";
+import CoffeeIcon from "../../../../components/barIcon";
+import EggsIcon from "../../../../components/breakfastIcon";
+import DishIcon from "../../../../components/lunchIcon";
 import ChocolateIcon from "../../components/snackIcon";
 import BrocoliIcon from "../../components/ppIcon";
-import CakeIcon from "../../components/dessertIcon";
+import CakeIcon from "../../../../components/dessertIcon";
 import type { Food } from "../../types";
 import { PlusOutlined } from '@ant-design/icons';
 import formatAmount from '../../../../helpers/format-amount';
+import CartItem from "../../components/CartItem";
+import { cartReducer } from "./store";
+
 interface CartItem {
   id: number;
   name: string;
@@ -24,9 +27,6 @@ interface CartItem {
   img?: string;
 }
 
-interface Cart {
-  items: CartItem[];
-}
 
 const categories = [
   { label: "Завтраки", value: "breakfast", icon: <EggsIcon /> },
@@ -37,53 +37,6 @@ const categories = [
   { label: "Десерты", value: "dessert", icon: <CakeIcon /> },
 ];
 
-const cartReducer = (
-  state: Cart[],
-  action: { type: string; payload?: any }
-) => {
-  switch (action.type) {
-    case "ADD_CART":
-      return [...state, { items: [] }];
-    case "REMOVE_CART":
-      return state.filter((_, i) => i !== action.payload);
-    case "ADD_ITEM": {
-      const { cartIndex, item } = action.payload;
-      return produce(state, (draft) => {
-        const existingItem = draft[cartIndex].items.find(
-          (i) => i.id === item.id
-        );
-        if (existingItem) {
-          existingItem.count += 1;
-        } else {
-          draft[cartIndex].items.push({ ...item, count: 1 });
-        }
-      });
-    }
-    case "REMOVE_ITEM": {
-      const { cartIndex, itemId } = action.payload;
-      return produce(state, (draft) => {
-        const existingItem = draft[cartIndex].items.find(
-          (i) => i.id === itemId
-        );
-        if (existingItem && existingItem.count > 1) {
-          existingItem.count -= 1;
-        } else {
-          draft[cartIndex].items = draft[cartIndex].items.filter(
-            (i) => i.id !== itemId
-          );
-        }
-      });
-    }
-    case "REMOVE_ALL_ITEMS": {
-      const { cartIndex } = action.payload;
-      return produce(state, (draft) => {
-        draft[cartIndex].items = [];
-      });
-    }
-    default:
-      return state;
-  }
-};
 
 const CreateOrder: React.FC = () => {
   const navigate = useNavigate();
@@ -294,51 +247,16 @@ const CreateOrder: React.FC = () => {
                 (
                   <List.Item className="flex items-center justify-between mx-10 mb-3 h-[49px] mt-5 mb-5 pb-1">
                     <div className="flex items-center">
-                      <div className="mr-4 flex items-center justify-center">
-                        <Image
-                          width="48px"
-                          height="48px"
-                          src={item?.img || "path/to/fallback/image.png"}
-                          alt={item.name}
-                          className="object-cover rounded-[4px] bg-black rounded-[8px]"
+                        <CartItem
+                          key={item.id}
+                          item={item}
+                          handleRemoveItem={handleRemoveItem}
+                          handleAddItem={handleAddItem}
+                          activeCart={activeCart}
                         />
-                      </div>
-                      <div className="flex flex-col justify-center gap-1">
-                        <span className="text-sm font-medium font-sf-pro text-left">
-                          {item.name}
-                        </span>
-                        <div className="bg-[#ecedee] rounded-full w-20 p-1 flex items-center h-[24px]">
-                          <span
-                            className="bg-white rounded-full px-[7px] cursor-pointer"
-                            onClick={() =>
-                              handleRemoveItem(activeCart, item.id)
-                            }
-                            aria-hidden
-                          >
-                            -
-                          </span>
-                          <span className="flex-1 text-center text-black">
-                            {item?.count ?? 0}
-                          </span>
-                          <span
-                            className="bg-white rounded-full px-[5px] cursor-pointer"
-                            onClick={() =>
-                              handleAddItem(activeCart, {
-                                id: item.id,
-                                name: item.name,
-                                count: 1,
-                                price: item.price,
-                              })
-                            }
-                            aria-hidden
-                          >
-                            +
-                          </span>
-                        </div>
-                      </div>
                     </div>
                     <div className="flex flex-col items-center">
-                      <span className="text-lg font-medium w-24">
+                      <span className="text-lg font-medium w-30">
                         {formatAmount(item?.price * item?.count)} UZS
                       </span>
 
@@ -380,7 +298,7 @@ const CreateOrder: React.FC = () => {
                 >
                   <Select.Option value="delivery">доставка</Select.Option>
                   <Select.Option value="with">с собой</Select.Option>
-                  <Select.Option value="there">туда</Select.Option>
+                  <Select.Option value="there">на месте</Select.Option>
                 </Select>
               </div>
               <div className="flex items-center justify-between">

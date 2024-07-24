@@ -33,14 +33,10 @@ export interface ListResponse<T> {
 
 export type OrderType = "self" | "shipping";
 
-export type OrderStatus = "new" | "in_process" | "finished" | "close";
-
-export type DeliveryStatus = "took" | "delivered";
+export type OrderStatus = "new" | "processing" | "completed" | "close";
 
 export type PaymentStatus = "paid" | "not_paid";
 
-export type ProductDay = "Monday" | "Tuesday" | "Wednesday" | "Thursday" | "Friday";
 
-export type Category = "breakfasts" | "lunches" | "bar" | "snacks" | "pp" | "desserts";
 
 

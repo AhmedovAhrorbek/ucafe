@@ -3,9 +3,9 @@ import NotFound from "../views/not-found";
 import InternalServerError from "../views/internet-server-error";
 import authRoutes from "../features/auth/routes";
 import { allOrdersRoutes } from "../features/orders";
-// import Check from "@/components/check";
 import type { CustomRoute } from "../types";
 import { sift } from "radash";
+import { ordersHistoryRoutes } from "../features/order-history";
 
 const routes: CustomRoute[] = [
   {
@@ -17,6 +17,7 @@ const routes: CustomRoute[] = [
     errorElement: <InternalServerError />,
     children: sift([
       allOrdersRoutes,
+      ordersHistoryRoutes,
       {
         id: "local-not-found",
         title: "not-found",
@@ -25,12 +26,6 @@ const routes: CustomRoute[] = [
       },
     ]),
   },
-  // {
-  //   id: "check",
-  //   title: "Check",
-  //   path: "check",
-  //   element: <Check />,
-  // },
   authRoutes,
   {
     id: "global-not-found",

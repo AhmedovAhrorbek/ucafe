@@ -3,14 +3,13 @@ import CheckboxG from "../../assets/Checkbox-green.png";
 import CheckboxR from "../../assets/Checkbox-red.png";
 import AddCircle from "../../assets/add-circle.png";
 import { useNavigate } from "react-router-dom";
-import { getOrders } from "../../api";
+import { getOrders, updateOrderStatus } from "../../api"; // updateOrderStatus'ni import qilish
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import { Order } from "../../types";
-import { DragDropContext, Droppable, Draggable } from "react-beautiful-dnd";
+import {  Order } from "../../types";
+import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
 import OrderCard from "../../components/OrderCard";
 import NoOrders from "../../components/NoOrders";
-import useOrdersState from "./state";
 
 const Orders = () => {
   const [newOrders, setNewOrders] = useState<Order[]>([]);
@@ -18,12 +17,10 @@ const Orders = () => {
   const [finishedOrders, setFinishedOrders] = useState<Order[]>([]);
   const navigate = useNavigate();
 
-  const { reorderState, move, getList } = useOrdersState();
-
   const { data: newOrdersData } = useQuery({
     queryKey: ["orders", "new"],
     queryFn: async () => {
-      const res = await getOrders({ status: "new", page_size: 100 });
+      const res = await getOrders({ status: "new" });
       return res.results;
     },
   });
@@ -31,7 +28,7 @@ const Orders = () => {
   const { data: inProcessOrdersData } = useQuery({
     queryKey: ["orders", "processing"],
     queryFn: async () => {
-      const res = await getOrders({ status: "processing", page_size: 100 });
+      const res = await getOrders({ status: "processing" });
       return res.results;
     },
   });
@@ -39,7 +36,7 @@ const Orders = () => {
   const { data: finishedOrdersData } = useQuery({
     queryKey: ["orders", "completed"],
     queryFn: async () => {
-      const res = await getOrders({ status: "completed", page_size: 100 });
+      const res = await getOrders({ status: "completed" });
       return res.results;
     },
   });
@@ -56,87 +53,64 @@ const Orders = () => {
     setFinishedOrders(finishedOrdersData ?? []);
   }, [finishedOrdersData]);
 
-  const handleDragEnd = (result) => {
+  const handleDragEnd = async (result: DropResult) => {
     const { source, destination } = result;
-
+    console.log(result);
+    // Qo'shimcha tekshiruvlar, agar qo'yilgan joy mavjud bo'lmasa
     if (!destination) return;
 
-    const sourceList = {
-      newOrders,
-      inProcessOrders,
-      finishedOrders,
-    }[source.droppableId];
+    const sourceId = source.droppableId;
+    const destId = destination.droppableId;
 
-    const destList = {
-      newOrders,
-      inProcessOrders,
-      finishedOrders,
-    }[destination.droppableId];
+    // Buyurtmalarni yangilash
+    const movedOrder =
+      sourceId === "droppable"
+        ? newOrders[source.index]
+        : sourceId === "droppable2"
+        ? inProcessOrders[source.index]
+        : finishedOrders[source.index];
 
-    if (!sourceList || !destList) return;
+    const updatedOrder = { ...movedOrder };
 
-    const { source: updatedSourceList, destination: updatedDestList } = move(
-      sourceList,
-      destList,
-      source,
-      destination
-    );
-
-    if (source.droppableId === destination.droppableId) {
-      const updatedList = reorderState(
-        updatedSourceList,
-        source.index,
-        destination.index
-      );
-
-      switch (source.droppableId) {
-        case "newOrders":
-          setNewOrders(updatedList);
-          break;
-        case "inProcessOrders":
-          setInProcessOrders(updatedList);
-          break;
-        case "finishedOrders":
-          setFinishedOrders(updatedList);
-          break;
-        default:
-          break;
-      }
-    } else {
-      switch (source.droppableId) {
-        case "newOrders":
-          setNewOrders(updatedSourceList);
-          break;
-        case "inProcessOrders":
-          setInProcessOrders(updatedSourceList);
-          break;
-        case "finishedOrders":
-          setFinishedOrders(updatedSourceList);
-          break;
-        default:
-          break;
-      }
-
-      switch (destination.droppableId) {
-        case "newOrders":
-          setNewOrders(updatedDestList);
-          break;
-        case "inProcessOrders":
-          setInProcessOrders(updatedDestList);
-          break;
-        case "finishedOrders":
-          setFinishedOrders(updatedDestList);
-          break;
-        default:
-          break;
-      }
+    // Statusni yangilash
+    if (destId === "droppable") {
+      updatedOrder.status = "new";
+    } else if (destId === "droppable2") {
+      updatedOrder.status = "processing";
+    } else if (destId === "droppable3") {
+      updatedOrder.status = "completed";
     }
+
+    // Buyurtmani yangilash
+    await updateOrderStatus(updatedOrder.id, updatedOrder.status);
+
+    // Buyurtmalar ro'yxatini yangilash
+    const newOrderList = [...newOrders];
+    const inProcessOrderList = [...inProcessOrders];
+    const finishedOrderList = [...finishedOrders];
+
+    if (sourceId === "droppable") newOrderList.splice(source.index, 1);
+    else if (sourceId === "droppable2")
+      inProcessOrderList.splice(source.index, 1);
+    else if (sourceId === "droppable3")
+      finishedOrderList.splice(source.index, 1);
+
+    if (destId === "droppable")
+      newOrderList.splice(destination.index, 0, movedOrder);
+    else if (destId === "droppable2")
+      inProcessOrderList.splice(destination.index, 0, movedOrder);
+    else if (destId === "droppable3")
+      finishedOrderList.splice(destination.index, 0, movedOrder);
+
+    setNewOrders(newOrderList);
+    setInProcessOrders(inProcessOrderList);
+    setFinishedOrders(finishedOrderList);
   };
 
   return (
     <div>
       <div className="bg-white px-[24px] py-[15px] border-b border-gray-200 pb-5">
-        <div className="flex items-center justify-between">
+        <div className="flex items-center justify-between ">
           <h1 className="font-sf-pro-display text-[24px] font-semibold leading-[28.64px] text-left">
             Все заказы
           </h1>
@@ -163,116 +137,125 @@ const Orders = () => {
           </div>
         </div>
       </div>
-      <div className="py-6 pt-10 flex justify-center gap-6 bg-white">
-        <DragDropContext onDragEnd={handleDragEnd}>
-          <Droppable droppableId="newOrders">
-            {(provided) => (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                className="bg-[#F5F5F5] w-[448px] min-h-[600px] rounded-tr-[8px] relative"
-              >
-                <p className="rounded-tr-[8px] absolute top-[-29px] left-0 bg-[#F5F5F5] px-3 py-1 text-medium">
-                  Новые ({newOrders.length})
-                </p>
-                {newOrders.length ? (
-                  newOrders.map((order, index) => (
-                    <Draggable
-                      key={order.id}
-                      draggableId={order.id.toString()}
-                      index={index}
-                    >
-                      {(provided, snapshot) => (
-                        <OrderCard
-                          order={order}
-                          provided={provided}
-                          isDragging={snapshot.isDragging}
-                        />
-                      )}
-                    </Draggable>
-                  ))
-                ) : (
-                  <div className="flex items-center justify-center mt-[200px]">
-                    <NoOrders />
-                  </div>
-                )}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
+      <div className="flex flex-col relative">
+        <div className="py-6 pt-10 flex justify-center gap-6 bg-white">
+          <DragDropContext onDragEnd={handleDragEnd}>
+            <Droppable droppableId="droppable">
+              {(provided) => (
+                <div
+                  ref={provided.innerRef}
+                  className="bg-[#F5F5F5] w-[448px] min-h-[600px] rounded-tr-[8px] relative"
+                >
+                  <p className="rounded-tr-[8px] absolute top-[-29px] left-0 bg-[#F5F5F5] px-3 py-1 text-medium">
+                    Новые ({newOrders.length})
+                  </p>
 
-          <Droppable droppableId="inProcessOrders">
-            {(provided) => (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                className="bg-[#F5F5F5] w-[448px] rounded-tr-[8px] relative"
-              >
-                <p className="rounded-tr-[8px] absolute top-[-29px] left-0 bg-[#F5F5F5] px-3 py-1 text-medium">
-                  В процессе ({inProcessOrders.length})
-                </p>
-                {inProcessOrders.length ? (
-                  inProcessOrders.map((order, index) => (
-                    <Draggable
-                      key={order.id}
-                      draggableId={order.id.toString()}
-                      index={index}
-                    >
-                      {(provided, snapshot) => (
-                        <OrderCard
-                          order={order}
-                          provided={provided}
-                          isDragging={snapshot.isDragging}
-                        />
-                      )}
-                    </Draggable>
-                  ))
-                ) : (
-                  <div className="flex items-center justify-center mt-[200px]">
-                    <NoOrders />
-                  </div>
-                )}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
+                  {newOrders.length ? (
+                    newOrders.map((order, index) => (
+                      <Draggable
+                        key={order.id}
+                        draggableId={order.id.toString()}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <OrderCard
+                            ref={provided.innerRef}
+                            provided={provided}
+                            order={order}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            onOrderClick={order.id}
+                          />
+                        )}
+                      </Draggable>
+                    ))
+                  ) : (
+                    <div className="flex items-center justify-center mt-[200px]">
+                      <NoOrders />
+                    </div>
+                  )}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
 
-          <Droppable droppableId="finishedOrders">
-            {(provided) => (
-              <div
-                ref={provided.innerRef}
-                {...provided.droppableProps}
-                className="bg-[#F5F5F5] w-[448px] rounded-tr-[8px] relative"
-              >
-                <p className="rounded-tr-[8px] absolute top-[-29px] left-0 bg-[#F5F5F5] px-3 py-1 text-medium">
-                  Готовые  ({finishedOrders.length})
-                </p>
-                {finishedOrders.length ? (
-                  finishedOrders.map((order, index) => (
-                    <Draggable
-                      key={order.id}
-                      draggableId={order.id.toString()}
-                      index={index}
-                    >
-                      {(provided, snapshot) => (
-                        <OrderCard
-                          order={order}
-                          provided={provided}
-                          isDragging={snapshot.isDragging}
-                        />
-                      )}
-                    </Draggable>
-                  ))
-                ) : (
-                  <div className="flex items-center justify-center mt-[200px]">
-                    <NoOrders />
-                  </div>
-                )}
-                {provided.placeholder}
-              </div>
-            )}
-          </Droppable>
-        </DragDropContext>
+            <Droppable droppableId="droppable2">
+              {(provided) => (
+                <div
+                  ref={provided.innerRef}
+                  className="bg-[#F5F5F5] w-[448px] rounded-tr-[8px] relative"
+                >
+                  <p className="rounded-tr-[8px] absolute top-[-29px] left-0 bg-[#F5F5F5] px-3 py-1 text-medium">
+                    В процессе ({inProcessOrders.length})
+                  </p>
+                  {inProcessOrders.length ? (
+                    inProcessOrders.map((order, index) => (
+                      <Draggable
+                        key={order.id}
+                        draggableId={order.id.toString()}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <OrderCard
+                            ref={provided.innerRef}
+                            provided={provided}
+                            order={order}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            onOrderClick={order.id}
+                          />
+                        )}
+                      </Draggable>
+                    ))
+                  ) : (
+                    <div className="flex items-center justify-center mt-[200px]">
+                      <NoOrders />
+                    </div>
+                  )}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+
+            <Droppable droppableId="droppable3">
+              {(provided) => (
+                <div
+                  ref={provided.innerRef}
+                  className="bg-[#F5F5F5] w-[448px] rounded-tr-[8px] relative"
+                >
+                  <p className="rounded-tr-[8px] absolute top-[-29px] left-0 bg-[#F5F5F5] px-3 py-1 text-medium">
+                    Готовые ({finishedOrders.length})
+                  </p>
+                  {finishedOrders.length ? (
+                    finishedOrders.map((order, index) => (
+                      <Draggable
+                        key={order.id}
+                        draggableId={order.id.toString()}
+                        index={index}
+                      >
+                        {(provided) => (
+                          <OrderCard
+                            ref={provided.innerRef}
+                            provided={provided}
+                            order={order}
+                            {...provided.draggableProps}
+                            {...provided.dragHandleProps}
+                            onOrderClick={order.id}
+                          />
+                        )}
+                      </Draggable>
+                    ))
+                  ) : (
+                    <div className="flex items-center justify-center mt-[200px]">
+                      <NoOrders />
+                    </div>
+                  )}
+                  {provided.placeholder}
+                </div>
+              )}
+            </Droppable>
+          </DragDropContext>
+        </div>
       </div>
     </div>
   );

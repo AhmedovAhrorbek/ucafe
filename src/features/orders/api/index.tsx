@@ -1,6 +1,6 @@
 import request from "../../../utils/axios";
 import type { ListResponse } from "../../../types";
-import type { CreateOrderData, Order, OrdersParams, Food } from "../types";
+import type { CreateOrderData, Order, OrdersParams, Food, UpdateOrderData } from "../types";
 
 export async function getOrders(
   params?: OrdersParams
@@ -41,3 +41,27 @@ export async function getFoods(): Promise<Food[]> {
   return res;
 }
 
+//// function for order status update /////
+export async function updateOrderStatus(
+  id: number,
+  status: string
+): Promise<void> {
+  await request({
+    url: `orders/${id}/`,
+    method: "patch",
+    data: { status },
+  });
+}
+
+//////// function for update order ////////////
+export async function updateOrder(
+  id: number,
+  data: UpdateOrderData
+): Promise<Order> {
+  const res: Order = await request({
+    url: `orders/${id}/`,
+    method: "patch",
+    data,
+  });
+  return res;
+}
