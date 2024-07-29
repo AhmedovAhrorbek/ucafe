@@ -6,6 +6,8 @@ import { allOrdersRoutes } from "../features/orders";
 import type { CustomRoute } from "../types";
 import { sift } from "radash";
 import { ordersHistoryRoutes } from "../features/order-history";
+import { menuManagmentRoutes } from "../features/menu-managment";
+import ReportsRoutes from "../features/reports/routes";
 
 const routes: CustomRoute[] = [
   {
@@ -18,6 +20,8 @@ const routes: CustomRoute[] = [
     children: sift([
       allOrdersRoutes,
       ordersHistoryRoutes,
+      menuManagmentRoutes,
+      ReportsRoutes,
       {
         id: "local-not-found",
         title: "not-found",

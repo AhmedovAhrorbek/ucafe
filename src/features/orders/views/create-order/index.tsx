@@ -11,7 +11,7 @@ import CoffeeIcon from "../../../../components/barIcon";
 import EggsIcon from "../../../../components/breakfastIcon";
 import DishIcon from "../../../../components/lunchIcon";
 import ChocolateIcon from "../../components/snackIcon";
-import BrocoliIcon from "../../components/ppIcon";
+import BrocoliIcon from "../../../../components/ppIcon";
 import CakeIcon from "../../../../components/dessertIcon";
 import type { Food } from "../../types";
 import { PlusOutlined } from '@ant-design/icons';
@@ -44,8 +44,8 @@ const CreateOrder: React.FC = () => {
     categories[0].value
   );
   const [foods, setFoods] = useState<Food[]>([]);
-  const [carts, dispatch] = useReducer(cartReducer, [{ items: [] }]); // Initialize with one cart
-  const [activeCart, setActiveCart] = useState<number>(0); // Set the first cart as active by default
+  const [carts, dispatch] = useReducer(cartReducer, [{ items: [] }]); 
+  const [activeCart, setActiveCart] = useState<number>(0); 
     const [payType, setPayType] = useState<string>("cash");
     const [orderType, setOrderType] = useState<string>("delivery");
   useEffect(() => {
@@ -55,7 +55,7 @@ const CreateOrder: React.FC = () => {
   const fetchFoods = async () => {
     try {
       const foodsData = await getFoods();
-      setFoods(foodsData.results);
+      setFoods(foodsData);
     } catch (error) {
       console.error("Error fetching foods:", error);
     }
@@ -213,7 +213,7 @@ const CreateOrder: React.FC = () => {
               return (
                 <FoodCard
                   key={index}
-                  imgSrc={food.photos[0]?.image}
+                  imgSrc={food?.image}
                   foodName={food.name}
                   count={count}
                   price={food.price}
@@ -223,7 +223,7 @@ const CreateOrder: React.FC = () => {
                       name: food.name,
                       count: 1,
                       price: food.price,
-                      img: food?.photos[0].image,
+                      img: food?.image,
                     })
                   }
                   onDecrement={() => handleRemoveItem(cartIndex, food.id)}

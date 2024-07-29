@@ -38,7 +38,7 @@ export async function getFoods(): Promise<Food[]> {
     url: "foods/",
     method: "get",
   });
-  return res;
+  return res?.results;
 }
 
 //// function for order status update /////

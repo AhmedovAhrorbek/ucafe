@@ -137,14 +137,14 @@ const Orders = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col relative">
+      <div className="flex flex-col  relative">
         <div className="py-6 pt-10 flex justify-center gap-6 bg-white">
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="droppable">
               {(provided) => (
                 <div
                   ref={provided.innerRef}
-                  className="bg-[#F5F5F5] w-[448px] min-h-[600px] rounded-tr-[8px] relative"
+                  className="bg-[#F5F5F5] w-[470px] min-h-[600px] rounded-tr-[8px] relative"
                 >
                   <p className="rounded-tr-[8px] absolute top-[-29px] left-0 bg-[#F5F5F5] px-3 py-1 text-medium">
                     Новые ({newOrders.length})
@@ -183,7 +183,7 @@ const Orders = () => {
               {(provided) => (
                 <div
                   ref={provided.innerRef}
-                  className="bg-[#F5F5F5] w-[448px] rounded-tr-[8px] relative"
+                  className="bg-[#F5F5F5] w-[470px] rounded-tr-[8px] relative"
                 >
                   <p className="rounded-tr-[8px] absolute top-[-29px] left-0 bg-[#F5F5F5] px-3 py-1 text-medium">
                     В процессе ({inProcessOrders.length})
@@ -221,7 +221,7 @@ const Orders = () => {
               {(provided) => (
                 <div
                   ref={provided.innerRef}
-                  className="bg-[#F5F5F5] w-[448px] rounded-tr-[8px] relative"
+                  className="bg-[#F5F5F5] w-[470px] rounded-tr-[8px] relative"
                 >
                   <p className="rounded-tr-[8px] absolute top-[-29px] left-0 bg-[#F5F5F5] px-3 py-1 text-medium">
                     Готовые ({finishedOrders.length})

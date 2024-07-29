@@ -1,6 +1,6 @@
 import type { CustomRoute } from "../../types";
 import InternalServerError from "../../views/internet-server-error";
-import OrdersHistory from "./views/order-history";
+import OrdersHistory from "./views/orders-history";
 
 const ordersHistoryRoutes: CustomRoute = {
   id: "orders-history",

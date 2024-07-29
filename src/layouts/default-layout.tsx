@@ -6,6 +6,10 @@ import { Link, useLocation }  from 'react-router-dom'
 import { useAuthContext } from "../contexts/auth-context";
 import { useState } from "react";
 import UserAvatarIcon from "../components/UserAvatar";
+import ReportsIcon from "../components/reportsIcon";
+import ExpensesIcon from "../components/expensesIcon";
+import ExitIcon from "../components/exitIcon";
+import { useNavigate } from "react-router-dom";
 interface Props {
   children: React.ReactElement;
   sidebarRoutes: CustomRoute[];
@@ -17,6 +21,7 @@ export default function DefaultLayout(props: Props): React.ReactElement {
   const { children} = props;
   const { setIsAuth } = useAuthContext();
   const [open, setOpen] = useState(false);
+  const navigate = useNavigate();
   const logout = (): void => {
     
     localStorage.removeItem("access_token");
@@ -24,6 +29,7 @@ export default function DefaultLayout(props: Props): React.ReactElement {
 
     setIsAuth(false);
   };
+
   const handleConfirm = () => {
     Modal.confirm({
       title: "Вы хотите выйти из системы?",
@@ -42,15 +48,29 @@ export default function DefaultLayout(props: Props): React.ReactElement {
       },
     });
   };
+
    const userMenu = (
-     <Menu>
-       <Menu.Item key="logout" onClick={handleConfirm}>Выход</Menu.Item>
+     <Menu className="w-[230px]">
+       <Menu.Item key="reports" onClick={()=>navigate("/reports")}>
+         <div className="flex items-center gap-3">
+           <ReportsIcon /> Отчеты
+         </div>
+       </Menu.Item>
+       <Menu.Item key="expenses" onClick={handleConfirm}>
+         <div className="flex items-center gap-3 mb-2">
+           <ExpensesIcon /> Расходы
+         </div>
+       </Menu.Item>
+       <Menu.Item key="logout" onClick={handleConfirm}>
+         <div className="flex items-center  gap-3 border-t border-[#ECEDEE] pt-3">
+           <ExitIcon /> Выйти с аккаунта
+         </div>
+       </Menu.Item>
      </Menu>
    );
 
     const location = useLocation();
      const linkStyle = `
-    border-b-2 border-transparent
     text-gray-700 hover:text-[rgba(85,102,255,1)] font-sans text-[16px] font-medium leading-[19.09px] text-left
     relative 
     transition duration-300
@@ -77,7 +97,10 @@ export default function DefaultLayout(props: Props): React.ReactElement {
             <Link
               to="/orders"
               className={`${linkStyle} ${
-                location.pathname === "/orders" ? activeLinkStyle : ""
+                location.pathname === "/orders" ||
+                location.pathname === "/orders/create-order"
+                  ? activeLinkStyle
+                  : ""
               }`}
             >
               Все заказы
