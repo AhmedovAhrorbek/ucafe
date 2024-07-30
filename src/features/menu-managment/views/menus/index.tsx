@@ -19,9 +19,9 @@ import DishIcon from "../../../../components/lunchIcon";
 import ChocolateIcon from "../../../orders/components/snackIcon";
 import BrocoliIcon from "../../../../components/ppIcon";
 import CakeIcon from "../../../../components/dessertIcon";
-import { createMenu, updateMenu, deleteMenu , getFoodById} from "../../api";
+import { createMenu, deleteMenu , getFoodById} from "../../api";
 import { getFoods } from "../../../orders/api";
-import { useQueryClient } from "@tanstack/react-query";
+// import { useQueryClient } from "@tanstack/react-query";
 import { FoodCardProps } from "../../types";
 import formatAmount from "../../../../helpers/format-amount";
 import MenuCard from "../../components/MenuCard";
@@ -52,8 +52,8 @@ const Menus = () => {
    const [uploadKey, setUploadKey] = useState<number>(Date.now());
    const [fileList, setFileList] = useState<UploadFile[]>([]);
    const [menuId, setMenuId] = useState<number | null>(null);
-
-   const queryClient = useQueryClient();
+   
+  //  const queryClient = useQueryClient();
 
    // Ma'lumotlarni olish uchun useQuery
    const { data: foods = [], refetch } = useQuery({
@@ -61,25 +61,25 @@ const Menus = () => {
      queryFn: getFoods,
    });
 
-   const { data: foodData, refetch: refetchFoodData } = useQuery({
-     queryKey: ["food", menuId],
-     queryFn: () => (menuId ? getFoodById(menuId) : Promise.resolve(null)),
-     enabled: !!menuId,
-   });
+  //  const { data: foodData, refetch: refetchFoodData } = useQuery({
+  //    queryKey: ["food", menuId],
+  //    queryFn: () => (menuId ? getFoodById(menuId) : Promise.resolve(null)),
+  //    enabled: !!menuId,
+  //  });
 
-   useEffect(() => {
-     if (foodData) {
-       form.setFieldsValue({
-         title: foodData.name,
-         input1: foodData.count,
-         input2: foodData.price,
-         is_active: foodData.is_active,
-       });
-       setImage(foodData.image);
-       setSelectedModalCategory(foodData.category);
-       setShowActions(true);
-     }
-   }, [foodData, form]);
+  //  useEffect(() => {
+  //    if (foodData) {
+  //      form.setFieldsValue({
+  //        title: foodData.name,
+  //        input1: foodData.count,
+  //        input2: foodData.price,
+  //        is_active: foodData.is_active,
+  //      });
+  //      setImage(foodData.image);
+  //      setSelectedModalCategory(foodData.category);
+  //      setShowActions(true);
+  //    }
+  //  }, [foodData, form]);
 
    const showModal = (menu?: FoodCardProps) => {
      if (menu) {
@@ -126,31 +126,31 @@ const Menus = () => {
      },
    });
 
-   const updateMutation = useMutation({
-     mutationFn: (data: { id: number; data: FoodCardProps }) =>
-       updateMenu(data.id, data.data),
-     onSuccess: () => {
-       message.success("Меню успешно обновлено");
-       refetch();
-       queryClient.invalidateQueries(["food", menuId]);
-       setIsModalVisible(false);
-     },
-     onError: (error: any) => {
-       if (error.response && error.response.data && error.response.data.name) {
-         message.error("Название блюда уже существует");
-       } else if (
-         error.response &&
-         error.response.data &&
-         error.response.data.image
-       ) {
-         message.error("Пожалуйста, добавьте изображение блюда");
-       } else {
-         message.error(
-           "Произошла ошибка при обновлении меню, попробуйте еще раз."
-         );
-       }
-     },
-   });
+  //  const updateMutation = useMutation({
+  //    mutationFn: (data: { id: number; data: FoodCardProps }) =>
+  //      updateMenu(data.id, data.data),
+  //    onSuccess: () => {
+  //      message.success("Меню успешно обновлено");
+  //      refetch();
+  //      queryClient.invalidateQueries(["food", menuId]);
+  //      setIsModalVisible(false);
+  //    },
+  //    onError: (error: any) => {
+  //      if (error.response && error.response.data && error.response.data.name) {
+  //        message.error("Название блюда уже существует");
+  //      } else if (
+  //        error.response &&
+  //        error.response.data &&
+  //        error.response.data.image
+  //      ) {
+  //        message.error("Пожалуйста, добавьте изображение блюда");
+  //      } else {
+  //        message.error(
+  //          "Произошла ошибка при обновлении меню, попробуйте еще раз."
+  //        );
+  //      }
+  //    },
+  //  });
 
    const deleteMutation = useMutation({
      mutationFn: (id: number) => deleteMenu(id),
@@ -275,7 +275,7 @@ const Menus = () => {
             image={food?.image}
             is_active={food?.is_active}
             formatAmount={formatAmount}
-            onUpdate={handleUpdate}
+            onUpdate={()=>{}}
             onDelete={deleteMutation.mutate}
           />
         ))}

@@ -8,6 +8,7 @@ import { sift } from "radash";
 import { ordersHistoryRoutes } from "../features/order-history";
 import { menuManagmentRoutes } from "../features/menu-managment";
 import ReportsRoutes from "../features/reports/routes";
+import { ExpensesRoutes } from "../features/expenses";
 
 const routes: CustomRoute[] = [
   {
@@ -22,6 +23,7 @@ const routes: CustomRoute[] = [
       ordersHistoryRoutes,
       menuManagmentRoutes,
       ReportsRoutes,
+      ExpensesRoutes,
       {
         id: "local-not-found",
         title: "not-found",

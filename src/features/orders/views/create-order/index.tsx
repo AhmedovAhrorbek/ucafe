@@ -24,7 +24,7 @@ interface CartItem {
   name: string;
   count: number;
   price?: number;
-  img?: string;
+  image?: string;
 }
 
 
@@ -223,7 +223,7 @@ const CreateOrder: React.FC = () => {
                       name: food.name,
                       count: 1,
                       price: food.price,
-                      img: food?.image,
+                      image: food?.image,
                     })
                   }
                   onDecrement={() => handleRemoveItem(cartIndex, food.id)}

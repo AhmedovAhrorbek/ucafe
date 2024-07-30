@@ -51,12 +51,12 @@ export default function DefaultLayout(props: Props): React.ReactElement {
 
    const userMenu = (
      <Menu className="w-[230px]">
-       <Menu.Item key="reports" onClick={()=>navigate("/reports")}>
+       <Menu.Item key="reports" onClick={() => navigate("/reports")}>
          <div className="flex items-center gap-3">
            <ReportsIcon /> Отчеты
          </div>
        </Menu.Item>
-       <Menu.Item key="expenses" onClick={handleConfirm}>
+       <Menu.Item key="expenses" onClick={() => navigate("/expenses")}>
          <div className="flex items-center gap-3 mb-2">
            <ExpensesIcon /> Расходы
          </div>

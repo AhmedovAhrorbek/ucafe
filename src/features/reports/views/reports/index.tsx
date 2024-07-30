@@ -2,20 +2,24 @@ import { useState, useEffect } from "react";
 import { Select, Button } from "antd";
 import DownloadIcon from "../../../../components/downloadIcon";
 import moment from "moment";
-import { getIncomeStatistics, getExpenseStatistics, getSalesStatistics, getOrderTypeStatistics } from "../../api";
+import {
+  getIncomeStatistics,
+  getExpenseStatistics,
+  getSalesStatistics,
+  getOrderTypeStatistics,
+} from "../../api";
 import IncomeCard from "../../components/IncomeCard";
 import ExpensesCard from "../../components/ExpensesCard";
-import SalesCard from '../../components/SalesCard' 
-// import OrdersMyselfCard from "../../components/ordersMyselfCard";
+import SalesCard from "../../components/SalesCard";
 import OrderMyselfCard from "../../components/OrderMyselfCard";
 import OrdersDeliveryCard from "../../components/OrdersDileveryCard";
 
 const Reports = () => {
   const [totalIncome, setTotalIncome] = useState<number | null>(null);
-  const [totalExpenses, setTotalExpenses] = useState<number | null>(null); 
-  const [totalSales, setTotalSales] = useState<number | null>(null); 
-  const [totalTakeoutOders, setTotalTakeoutOders] = useState<number | null> (null)
-  const [totalDeliveryOrders, setTotalDeliveryOrders] = useState<number | null>(null);
+  const [totalExpenses, setTotalExpenses] = useState<number | null>(null);
+  const [totalSales, setTotalSales] = useState<number | null>(null);
+  const [takeoutOrders, setTakeoutOrders] = useState<number[]>([]);
+  const [deliveryOrders, setDeliveryOrders] = useState<number[]>([]);
   const [dateRange, setDateRange] = useState<string>(
     "29 ноября, 2023 - 5 декабря, 2023"
   );
@@ -78,6 +82,7 @@ const Reports = () => {
           "23:59"
         );
         setTotalExpenses(total_expenses);
+
         const { total_sales } = await getSalesStatistics(
           startDate,
           endDate,
@@ -85,14 +90,17 @@ const Reports = () => {
           "23:59"
         );
         setTotalSales(total_sales);
-         const { takeout_orders, delivery_orders } = await getOrderTypeStatistics(
-           startDate,
-           endDate,
-           "00:00",
-           "23:59"
-         );
-         setTotalTakeoutOders(takeout_orders);
-         setTotalDeliveryOrders(delivery_orders);
+
+        const { takeout_orders, delivery_orders } = await getOrderTypeStatistics(
+          startDate,
+          endDate,
+          "00:00",
+          "23:59"
+        );
+        setTakeoutOrders(takeout_orders);
+        setDeliveryOrders(delivery_orders);
+
+       
       } catch (error) {
         console.error("Failed to fetch statistics:", error);
       }
@@ -103,7 +111,7 @@ const Reports = () => {
   return (
     <>
       <div className="flex items-center justify-between px-6 py-3 bg-white">
-        <h2 className="text-[#2F3138] font-sf-pro-display text-[24px]  font-medium leading-24 text-left">
+        <h2 className="text-[#2F3138] font-sf-pro-display text-[24px] font-medium leading-24 text-left">
           Отчеты
         </h2>
         <div className="w-[659px] flex items-center justify-between">
@@ -146,18 +154,19 @@ const Reports = () => {
           {totalSales !== null && <SalesCard total_sales={totalSales} />}
         </div>
         <div>
-          {totalTakeoutOders !== null && (
-            <OrderMyselfCard takeout_orders={totalTakeoutOders} />
+          {takeoutOrders !== null && (
+            <OrderMyselfCard takeout_orders={takeoutOrders} />
           )}
         </div>
         <div>
-          {totalDeliveryOrders !== null && (
-            <OrdersDeliveryCard delivery_orders={totalDeliveryOrders} />
+          {deliveryOrders !== null && (
+            <OrdersDeliveryCard delivery_orders={deliveryOrders} />
           )}
         </div>
       </div>
+      
     </>
   );
 };
 
-export default Reports;
+export default Reports

@@ -1,13 +1,15 @@
 import { forwardRef, useState } from "react";
-import { Tag, Drawer, Button} from "antd";
+import { Tag, Drawer, Button, notification } from "antd";
 import clsx from "clsx";
 import moment from "moment";
-import type { Order } from "../types";
+import { useQuery, useMutation } from "@tanstack/react-query";
+import type { Order, Item, UpdateOrderData } from "../types";
 import WalkingIcon from "./walkingIcon";
 import ChairIcon from "../../../components/chairIcon";
 import BuildingIcon from "../../../components/buildingIcon";
 import { CloseOutlined } from "@ant-design/icons";
 import CartItem from "./CartItem"; // Import CartItem
+import { getOrder, updateOrder } from "../api"; // Import the getOrder and updateOrder functions
 
 interface ItemProps extends Order {
   onOrderClick: (id: number) => void;
@@ -19,17 +21,7 @@ interface ItemProps extends Order {
 const Item = forwardRef<HTMLDivElement, ItemProps>((props, ref) => {
   const { provided, order, isDragging } = props;
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
-  const [cartItems, setCartItems] = useState<any[]>([]); // State for cart items
   const [activeCart, setActiveCart] = useState<number>(1); // Example cart ID
-
-  const showDrawer = () => {
-    setIsDrawerVisible(true);
-  };
-
-  const closeDrawer = () => {
-    setIsDrawerVisible(false);
-  };
-
 
   const {
     id,
@@ -42,6 +34,63 @@ const Item = forwardRef<HTMLDivElement, ItemProps>((props, ref) => {
     order_type,
   } = order;
 
+  // useQuery hook for fetching order data
+  const { data: cartItems = [], refetch } = useQuery({
+    queryKey: ["order", id],
+    queryFn: () => getOrder(id),
+    enabled: false,
+  });
+
+  // Mutation hook for updating the order
+  const { mutate: mutateUpdateOrder } = useMutation({
+    mutationFn: (updatedItems: UpdateOrderData) =>
+      updateOrder(id, updatedItems),
+    onSuccess: () => {
+      notification.success({ message: "Order updated successfully!" });
+      refetch();
+    },
+    onError: () => {
+      notification.error({ message: "Failed to update order." });
+    },
+  });
+
+  const showDrawer = () => {
+    setIsDrawerVisible(true);
+    refetch();
+  };
+
+  const closeDrawer = () => {
+    setIsDrawerVisible(false);
+  };
+
+  const handleRemoveItem = (itemId: number) => {
+    const updatedItems = cartItems.items
+      .map((item: Item) =>
+        item.id === itemId ? { ...item, count: item.count - 1 } : item
+      )
+      .filter((item: Item) => item.count > 0); // Remove item if count is 0
+
+    const updateData: UpdateOrderData = {
+      items: updatedItems.map((item) => ({ id: item.id, count: item.count })),
+    };
+
+    mutateUpdateOrder(updateData);
+  };
+
+  const handleAddItem = (item: Item) => {
+    const updatedItems = cartItems.items.map((existingItem: Item) =>
+      existingItem.id === item.id
+        ? { ...existingItem, count: existingItem.count + 1 }
+        : existingItem
+    );
+
+    const updateData: UpdateOrderData = {
+      items: updatedItems.map((item) => ({ id: item.id, count: item.count })),
+    };
+
+    mutateUpdateOrder(updateData);
+  };
+
   return (
     <>
       <div
@@ -53,9 +102,7 @@ const Item = forwardRef<HTMLDivElement, ItemProps>((props, ref) => {
           is_new ? "outline outline-1 outline-[#5566FF]" : "",
           isDragging ? "bg-gray-100" : ""
         )}
-        onClick={() => {
-          showDrawer();
-        }}
+        onClick={showDrawer}
         aria-hidden
       >
         <div className="flex justify-between">
@@ -74,7 +121,7 @@ const Item = forwardRef<HTMLDivElement, ItemProps>((props, ref) => {
           <Tag className="bg-white py-1 px-2 flex items-center gap-1">
             {order_type === "delivery" ? (
               <div className="flex items-center gap-1">
-                <BuildingIcon /> кабинет 
+                <BuildingIcon /> кабинет
               </div>
             ) : order_type === "there" ? (
               <div className="flex items-center gap-1">
@@ -125,7 +172,7 @@ const Item = forwardRef<HTMLDivElement, ItemProps>((props, ref) => {
             <div className="flex justify-between items-center w-full">
               <div>
                 <div className="text-gray-500 font-sf-pro-display text-base font-normal leading-[16.71px] text-left">
-                  Оформлен в {moment(created_at).format("HH:mm")} • {" "}
+                  Оформлен в {moment(created_at).format("HH:mm")} •{" "}
                   {status === "new"
                     ? "Новые"
                     : status === "processing"
@@ -150,15 +197,19 @@ const Item = forwardRef<HTMLDivElement, ItemProps>((props, ref) => {
         width={500}
         closable={false}
       >
-        {cartItems.map((item) => (
-          <CartItem
-            key={item.id}
-            item={item}
-            handleRemoveItem={handleRemoveItem}
-            handleAddItem={handleAddItem}
-            activeCart={activeCart}
-          />
-        ))}
+        <div className="flex flex-col gap-2">
+          {cartItems &&
+            cartItems.items &&
+            cartItems.items.map((item) => (
+              <CartItem
+                key={item.id}
+                item={item.food}
+                handleRemoveItem={handleRemoveItem}
+                handleAddItem={handleAddItem}
+                activeCart={activeCart}
+              />
+            ))}
+        </div>
       </Drawer>
     </>
   );
