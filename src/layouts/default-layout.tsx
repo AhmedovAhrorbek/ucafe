@@ -1,5 +1,5 @@
-import { Layout, Input, Avatar, Dropdown, Menu ,Modal } from "antd";
-import { SearchOutlined, DownOutlined } from "@ant-design/icons";
+import { Layout, Avatar, Dropdown, Menu ,Modal } from "antd";
+import {  DownOutlined } from "@ant-design/icons";
 import Logo from '../assets/LayoutImges/Navbar-logo.png'
 import { CustomRoute } from "../types";
 import { Link, useLocation }  from 'react-router-dom'
@@ -123,11 +123,6 @@ export default function DefaultLayout(props: Props): React.ReactElement {
             </Link>
           </div>
           <div className="flex items-center space-x-4">
-            <Input
-              placeholder="Поиск"
-              prefix={<SearchOutlined />}
-              className="  w-[311px] h-[40px] p-[10px_12px] gap-2 rounded-tl-[6px] rounded-bl-[6px] border-t border-l border-b-0 border-r-0 border-gray-300 "
-            />
             <Dropdown overlay={userMenu} trigger={["click"]}>
               <div className="flex items-center space-x-3 cursor-pointer w-[188px] h-[36px]">
                 <Avatar

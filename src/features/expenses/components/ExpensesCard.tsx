@@ -28,7 +28,7 @@ const ExpensesCard: React.FC<ExpensesCardProps> = ({
         {formatAmount(price)} UZS
       </span>
       <div>
-        <p className="w-[367px] font-sf-pro text-[16px] text-[#2F3138]">
+        <p className="w-[367px] font-sf-pro text-[16px] text-[#2F3138] break-words">
           {description}
         </p>
       </div>

@@ -3,11 +3,17 @@ import CheckboxG from "../../assets/Checkbox-green.png";
 import CheckboxR from "../../assets/Checkbox-red.png";
 import AddCircle from "../../assets/add-circle.png";
 import { useNavigate } from "react-router-dom";
-import { getOrders, updateOrderStatus } from "../../api"; // updateOrderStatus'ni import qilish
+import { getOrders, updateOrderStatus } from "../../api"; // Importing updateOrderStatus function
 import { useQuery } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
-import {  Order } from "../../types";
-import { DragDropContext, Droppable, Draggable, DropResult } from "react-beautiful-dnd";
+import { Order } from "../../types";
+import {
+  DragDropContext,
+  Droppable,
+  Draggable,
+  DropResult,
+} from "react-beautiful-dnd";
+import { message } from "antd";
 import OrderCard from "../../components/OrderCard";
 import NoOrders from "../../components/NoOrders";
 
@@ -55,14 +61,12 @@ const Orders = () => {
 
   const handleDragEnd = async (result: DropResult) => {
     const { source, destination } = result;
-    console.log(result);
-    // Qo'shimcha tekshiruvlar, agar qo'yilgan joy mavjud bo'lmasa
     if (!destination) return;
 
     const sourceId = source.droppableId;
     const destId = destination.droppableId;
 
-    // Buyurtmalarni yangilash
+    // Updating the order status
     const movedOrder =
       sourceId === "droppable"
         ? newOrders[source.index]
@@ -72,7 +76,16 @@ const Orders = () => {
 
     const updatedOrder = { ...movedOrder };
 
-    // Statusni yangilash
+     if (
+       sourceId === "droppable3" &&
+       (destId === "droppable" || destId === "droppable2")
+     ) {
+       message.error(
+         "Завершенный заказ нельзя переместить в новые или в процессе."
+       );
+       return;
+     }
+     
     if (destId === "droppable") {
       updatedOrder.status = "new";
     } else if (destId === "droppable2") {
@@ -81,36 +94,38 @@ const Orders = () => {
       updatedOrder.status = "completed";
     }
 
-    // Buyurtmani yangilash
-    await updateOrderStatus(updatedOrder.id, updatedOrder.status);
-
-    // Buyurtmalar ro'yxatini yangilash
+    
+    // Updating the order lists
     const newOrderList = [...newOrders];
     const inProcessOrderList = [...inProcessOrders];
     const finishedOrderList = [...finishedOrders];
-
+    
+   
+    
     if (sourceId === "droppable") newOrderList.splice(source.index, 1);
     else if (sourceId === "droppable2")
       inProcessOrderList.splice(source.index, 1);
     else if (sourceId === "droppable3")
       finishedOrderList.splice(source.index, 1);
-
+    
     if (destId === "droppable")
       newOrderList.splice(destination.index, 0, movedOrder);
     else if (destId === "droppable2")
       inProcessOrderList.splice(destination.index, 0, movedOrder);
     else if (destId === "droppable3")
       finishedOrderList.splice(destination.index, 0, movedOrder);
-
+    
     setNewOrders(newOrderList);
     setInProcessOrders(inProcessOrderList);
     setFinishedOrders(finishedOrderList);
+
+    await updateOrderStatus(updatedOrder.id, updatedOrder.status);
   };
 
   return (
     <div>
       <div className="bg-white px-[24px] py-[15px] border-b border-gray-200 pb-5">
-        <div className="flex items-center justify-between ">
+        <div className="flex items-center justify-between">
           <h1 className="font-sf-pro-display text-[24px] font-semibold leading-[28.64px] text-left">
             Все заказы
           </h1>
@@ -137,7 +152,7 @@ const Orders = () => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col  relative">
+      <div className="flex flex-col relative">
         <div className="py-6 pt-10 flex justify-center gap-6 bg-white">
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="droppable">
@@ -224,7 +239,7 @@ const Orders = () => {
                   className="bg-[#F5F5F5] w-[470px] rounded-tr-[8px] relative"
                 >
                   <p className="rounded-tr-[8px] absolute top-[-29px] left-0 bg-[#F5F5F5] px-3 py-1 text-medium">
-                    Готовые ({finishedOrders.length})
+                    Выполненные ({finishedOrders.length})
                   </p>
                   {finishedOrders.length ? (
                     finishedOrders.map((order, index) => (

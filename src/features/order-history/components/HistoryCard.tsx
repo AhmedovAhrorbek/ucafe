@@ -43,7 +43,7 @@ const HistoryCard: React.FC<HistoryCardProps> = ({ data }) => {
       <span className="text-[14px] ">
         {moment(created_at).locale("ru").format("D MMMM, YYYY | HH:mm")}
       </span>
-      <Tag className="bg-white py-1 px-2 flex items-center gap-1 ">
+      <Tag className=" w-[104px] text-start bg-white py-1 px-2 flex items-center gap-1 ">
         <DishIcon /> {position} позиций
       </Tag>
       <Tag className="bg-white py-1 px-2 flex items-center gap-1 ">

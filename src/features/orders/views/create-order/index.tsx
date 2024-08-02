@@ -10,7 +10,7 @@ import FoodCard from "../../components/FoodCard";
 import CoffeeIcon from "../../../../components/barIcon";
 import EggsIcon from "../../../../components/breakfastIcon";
 import DishIcon from "../../../../components/lunchIcon";
-import ChocolateIcon from "../../components/snackIcon";
+import ChocolateIcon from "../../../../components/snackIcon";
 import BrocoliIcon from "../../../../components/ppIcon";
 import CakeIcon from "../../../../components/dessertIcon";
 import type { Food } from "../../types";
@@ -33,7 +33,7 @@ const categories = [
   { label: "Обеды", value: "lunch", icon: <DishIcon /> },
   { label: "Бар", value: "bar", icon: <CoffeeIcon /> },
   { label: "Перекусы", value: "snack", icon: <ChocolateIcon /> },
-  { label: "ПП", value: "proper nutrition", icon: <BrocoliIcon /> },
+  { label: "ПП", value: "proper_nutrition", icon: <BrocoliIcon /> },
   { label: "Десерты", value: "dessert", icon: <CakeIcon /> },
 ];
 
@@ -48,6 +48,7 @@ const CreateOrder: React.FC = () => {
   const [activeCart, setActiveCart] = useState<number>(0); 
     const [payType, setPayType] = useState<string>("cash");
     const [orderType, setOrderType] = useState<string>("delivery");
+    const [payStatusType, setPayStatusType] = useState<string>("paid")
   useEffect(() => {
     fetchFoods();
   }, []);
@@ -57,7 +58,7 @@ const CreateOrder: React.FC = () => {
       const foodsData = await getFoods();
       setFoods(foodsData);
     } catch (error) {
-      console.error("Error fetching foods:", error);
+      // console.error("Error fetching foods:", error);
     }
   };
   const orderCreation = useMutation({
@@ -76,8 +77,9 @@ const CreateOrder: React.FC = () => {
         navigate("/orders");
       }
     },
-    onError: (error: string) => {
-      message.error(`Order qo'shishda muammo bor.${error}`);
+    onError: (error) => {
+      console.log(error)
+      message.error(` ${error?.data?.message}`);
     },
   });
 
@@ -122,7 +124,7 @@ const CreateOrder: React.FC = () => {
           food_id: item.id,
           quantity: item.count,
         })),
-        status_pay: "paid",
+        status_pay: payStatusType,
       })
     };
 
@@ -243,17 +245,17 @@ const CreateOrder: React.FC = () => {
               dataSource={carts[activeCart].items}
               bordered={false}
               renderItem={(item) => (
-                console.log(item),
+                // console.log(item),
                 (
                   <List.Item className="flex items-center justify-between mx-10 mb-3 h-[49px] mt-5 mb-5 pb-1">
                     <div className="flex items-center">
-                        <CartItem
-                          key={item.id}
-                          item={item}
-                          handleRemoveItem={handleRemoveItem}
-                          handleAddItem={handleAddItem}
-                          activeCart={activeCart}
-                        />
+                      <CartItem
+                        key={item.id}
+                        item={item}
+                        handleRemoveItem={handleRemoveItem}
+                        handleAddItem={handleAddItem}
+                        activeCart={activeCart}
+                      />
                     </div>
                     <div className="flex flex-col items-center">
                       <span className="text-lg font-medium w-30">
@@ -277,7 +279,7 @@ const CreateOrder: React.FC = () => {
 
             <div className="w-full flex flex-col gap-2 mt-2  bg-[#F5F5F5] px-12 py-2 rounded-t-[12px] ">
               <div className="flex items-center justify-between">
-                <p>Тип заказа</p>
+                <p> Способ оплаты</p>
                 <Select
                   defaultValue="cash"
                   style={{ width: 120 }}
@@ -290,7 +292,7 @@ const CreateOrder: React.FC = () => {
                 </Select>
               </div>
               <div className="flex items-center justify-between">
-                <p>Способ оплаты</p>
+                <p>Тип заказа</p>
                 <Select
                   defaultValue="delivery"
                   style={{ width: 120 }}
@@ -299,6 +301,17 @@ const CreateOrder: React.FC = () => {
                   <Select.Option value="delivery">доставка</Select.Option>
                   <Select.Option value="with">с собой</Select.Option>
                   <Select.Option value="there">на месте</Select.Option>
+                </Select>
+              </div>
+              <div className="flex items-center justify-between">
+                <p>Тип оплаты</p>
+                <Select
+                  defaultValue="paid"
+                  style={{ width: 120 }}
+                  onChange={(value) => setPayStatusType(value)}
+                >
+                  <Select.Option value="paid">оплаченный</Select.Option>
+                  <Select.Option value="unpaid">неоплаченный</Select.Option>
                 </Select>
               </div>
               <div className="flex items-center justify-between">

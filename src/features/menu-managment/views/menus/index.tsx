@@ -16,7 +16,7 @@ import AddCircle from "../../../orders/assets/add-circle.png";
 import CoffeeIcon from "../../../../components/barIcon";
 import EggsIcon from "../../../../components/breakfastIcon";
 import DishIcon from "../../../../components/lunchIcon";
-import ChocolateIcon from "../../../orders/components/snackIcon";
+import ChocolateIcon from "../../../../components/snackIcon";
 import BrocoliIcon from "../../../../components/ppIcon";
 import CakeIcon from "../../../../components/dessertIcon";
 import { createMenu, deleteMenu , getFoodById} from "../../api";
@@ -34,7 +34,7 @@ const categories = [
   { label: "Обеды", value: "lunch", icon: <DishIcon /> },
   { label: "Бар", value: "bar", icon: <CoffeeIcon /> },
   { label: "Перекусы", value: "snack", icon: <ChocolateIcon /> },
-  { label: "ПП", value: "proper nutrition", icon: <BrocoliIcon /> },
+  { label: "ПП", value: "proper_nutrition", icon: <BrocoliIcon /> },
   { label: "Десерты", value: "dessert", icon: <CakeIcon /> },
 ];
 

@@ -15,20 +15,20 @@ export const createExpense = async (
 export const getExpenses = async (
   page: number,
   page_size: number,
-//   start_date?:string,
-//   end_date?:string,
+  start_date?:string,
+  end_date?:string,
 ): Promise<PaginatedExpenses> => {
-  const response = await request({
+  const res = await request({
     url: `expenses/`,
     method: "get",
     params: {
       page,
       page_size,
-      //   start_date,
-      //   end_date,
+        start_date,
+        end_date,
     },
   });
-  return response;
+  return res;
 };
 
 export const getExpenseById = async (id: string): Promise<Expense> => {

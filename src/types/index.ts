@@ -4,7 +4,6 @@ import type {
   RouteObject,
 } from "react-router-dom";
 
-export type AppLang = "ru" | "uzLatin" | "uzCryllic";
 
 export interface CustomNonIndexRouteObject extends NonIndexRouteObject {
   children?: Array<RouteObject & { title?: string }>;

@@ -18,13 +18,14 @@ import {
   createExpense,
   getExpenseById,
   updateExpense,
-  deleteExpense, // Import deleteExpense function
+  deleteExpense,
 } from "../../api";
 import Spinner from "../../../../components/Spinner";
 import Pagination from "../../../../components/Pagination";
 import ExpensesCard from "../../components/ExpensesCard";
 import moment from "moment";
 import { CreateExpenseDataType } from "../../types";
+
 const { RangePicker } = DatePicker;
 
 const Expenses = () => {
@@ -33,21 +34,36 @@ const Expenses = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [editingExpenseId, setEditingExpenseId] = useState<string | null>(null);
-  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false); // State for delete confirmation modal
+  const [isDeleteModalVisible, setIsDeleteModalVisible] = useState(false);
+  const [selectedDateRange, setSelectedDateRange] = useState<
+    [moment.Moment | null, moment.Moment | null]
+  >([null, null]);
   const [form] = Form.useForm();
 
   const queryClient = useQueryClient();
 
   const { data, isLoading } = useQuery({
-    queryKey: ["expenses", currentPage],
-    queryFn: () => getExpenses(currentPage, pageSize),
+    queryKey: ["expenses", currentPage, selectedDateRange],
+    queryFn: () => {
+      const [start_date, end_date] = selectedDateRange;
+      return getExpenses(
+        currentPage,
+        pageSize,
+        start_date ? start_date.format("YYYY-MM-DD") : undefined,
+        end_date ? end_date.format("YYYY-MM-DD") : undefined
+      );
+    },
     keepPreviousData: true,
   });
 
   const createMutation = useMutation({
     mutationFn: (expense: CreateExpenseDataType) => createExpense(expense),
     onSuccess: () => {
-      queryClient.invalidateQueries(["expenses", currentPage]);
+      queryClient.invalidateQueries([
+        "expenses",
+        currentPage,
+        selectedDateRange,
+      ]);
       setIsModalVisible(false);
       message.success("Расходы успешно создают");
       form.resetFields();
@@ -58,9 +74,13 @@ const Expenses = () => {
     mutationFn: ({ id, data }: { id: string; data: CreateExpenseDataType }) =>
       updateExpense(id, data),
     onSuccess: () => {
-      queryClient.invalidateQueries(["expenses", currentPage]);
+      queryClient.invalidateQueries([
+        "expenses",
+        currentPage,
+        selectedDateRange,
+      ]);
       setIsModalVisible(false);
-    message.success("Расходы успешно обновлены");
+      message.success("Расходы успешно обновлены");
       form.resetFields();
       setIsEditMode(false);
       setEditingExpenseId(null);
@@ -70,7 +90,11 @@ const Expenses = () => {
   const deleteMutation = useMutation({
     mutationFn: (id: number) => deleteExpense(id),
     onSuccess: () => {
-      queryClient.invalidateQueries(["expenses", currentPage]);
+      queryClient.invalidateQueries([
+        "expenses",
+        currentPage,
+        selectedDateRange,
+      ]);
       setIsDeleteModalVisible(false);
       message.success("Меню успешно удалено");
     },
@@ -104,7 +128,7 @@ const Expenses = () => {
 
   const handleDeleteExpenseClick = (id: number) => {
     setEditingExpenseId(id.toString());
-    setIsDeleteModalVisible(true); 
+    setIsDeleteModalVisible(true);
   };
 
   const handleModalOk = () => {
@@ -138,13 +162,18 @@ const Expenses = () => {
   const handleDeleteModalOk = () => {
     if (editingExpenseId) {
       deleteMutation.mutate(parseInt(editingExpenseId));
-      
     }
   };
 
   const handleDeleteModalCancel = () => {
     setIsDeleteModalVisible(false);
     setEditingExpenseId(null);
+  };
+
+  const handleDateRangeChange = (
+    dates: [moment.Moment | null, moment.Moment | null] | null
+  ) => {
+    setSelectedDateRange(dates || [null, null]);
   };
 
   return (
@@ -157,6 +186,8 @@ const Expenses = () => {
           <RangePicker
             className="w-72"
             placeholder={["Start Date", "End Date"]}
+            onChange={handleDateRangeChange}
+            allowClear
           />
           <Button
             className="flex items-center"
@@ -243,42 +274,33 @@ const Expenses = () => {
         </Form>
       </Modal>
 
-        <Modal
-          title={
-            <div className="font-sf-pro text-[24px] mb-7 text-[#2F3138]">
-              Удалить блюдо
-            </div>
-          }
-          open={isDeleteModalVisible}
-          onCancel={() => setIsDeleteModalVisible(false)}
-          footer={null}
-        >
-          <div className="text-center  p-3">
-            <div className="mb-5" onClick={handleDeleteModalCancel}>
-              <DeleteIcon className="w-[32px]" />
-            </div>
-            <div>
-              <p className="font-sf-pro text-[16px] text-[#2F3138] w-[343px] mx-auto mb-4">
-                Вы уверены, что хотите удалить выбранное блюдо из меню?
-              </p>
-              <div className="flex items-center gap-5 justify-center">
-                <Button
-                  className="bg-[#F5F5F5] border-none"
-                  onClick={handleDeleteModalCancel}
-                >
-                  Отмена
-                </Button>
-                <Button
-                  danger
-                  className="bg-red-100 text-red-500 border-none"
-                  onClick={handleDeleteModalOk}
-                >
-                  Удалить
-                </Button>
-              </div>
+      <Modal
+        title={
+          <div className="font-sf-pro text-[24px] mb-7 text-[#2F3138]">
+            Удалить блюдо
+          </div>
+        }
+        open={isDeleteModalVisible}
+        onCancel={() => setIsDeleteModalVisible(false)}
+        footer={null}
+      >
+        <div className="text-center p-3">
+          <div className="mb-5" onClick={handleDeleteModalCancel}>
+            <DeleteIcon className="w-[32px]" />
+          </div>
+          <div>
+            <p className="font-sf-pro text-[16px] text-[#2F3138] w-[343px] mx-auto mb-4">
+              Вы уверены, что хотите удалить выбранное блюдо из меню?
+            </p>
+            <div className="flex items-center justify-center gap-3">
+              <Button onClick={handleDeleteModalCancel}>Отменить</Button>
+              <Button onClick={handleDeleteModalOk} danger type="primary">
+                Удалить
+              </Button>
             </div>
           </div>
-        </Modal>
+        </div>
+      </Modal>
     </div>
   );
 };

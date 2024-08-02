@@ -21,7 +21,7 @@ interface ItemProps extends Order {
 const Item = forwardRef<HTMLDivElement, ItemProps>((props, ref) => {
   const { provided, order, isDragging } = props;
   const [isDrawerVisible, setIsDrawerVisible] = useState(false);
-  const [activeCart, setActiveCart] = useState<number>(1); // Example cart ID
+  const [activeCart, setActiveCart] = useState<number>(1);
 
   const {
     id,
