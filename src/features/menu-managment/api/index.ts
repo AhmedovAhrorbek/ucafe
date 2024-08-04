@@ -25,18 +25,18 @@ export async function getFoodById(id: number): Promise<FoodCardProps> {
     url: `foods/${id}/`,
     method: "get",
   });
-  return response.data;
+  return response;
 }
 
 
 ////// Update Menu /////////
 export async function updateMenu(
   id: number,
-  { formData }: FoodCardProps
+  formData: FormData
 ): Promise<void> {
   await request({
     url: `foods/${id}/`,
     method: "patch",
-    data: {formData},
+    data: formData,
   });
 }

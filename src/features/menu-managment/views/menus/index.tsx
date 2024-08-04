@@ -19,7 +19,7 @@ import DishIcon from "../../../../components/lunchIcon";
 import ChocolateIcon from "../../../../components/snackIcon";
 import BrocoliIcon from "../../../../components/ppIcon";
 import CakeIcon from "../../../../components/dessertIcon";
-import { createMenu, deleteMenu , getFoodById} from "../../api";
+import { createMenu, deleteMenu , getFoodById, updateMenu} from "../../api";
 import { getFoods } from "../../../orders/api";
 // import { useQueryClient } from "@tanstack/react-query";
 import { FoodCardProps } from "../../types";
@@ -39,194 +39,229 @@ const categories = [
 ];
 
 const Menus = () => {
-   const [selectedCategory, setSelectedCategory] = useState<string>(
-     categories[0].value
-   );
-   const [selectedModalCategory, setSelectedModalCategory] = useState<string>(
-     categories[0].value
-   );
-   const [isModalVisible, setIsModalVisible] = useState(false);
-   const [form] = Form.useForm();
-   const [image, setImage] = useState<string | null>(null);
-   const [showActions, setShowActions] = useState<boolean>(false);
-   const [uploadKey, setUploadKey] = useState<number>(Date.now());
-   const [fileList, setFileList] = useState<UploadFile[]>([]);
-   const [menuId, setMenuId] = useState<number | null>(null);
-   
-  //  const queryClient = useQueryClient();
+     const [selectedCategory, setSelectedCategory] = useState<string>(
+       categories[0].value
+     );
+     const [selectedModalCategory, setSelectedModalCategory] = useState<string>(
+       categories[0].value
+     );
+     const [isModalVisible, setIsModalVisible] = useState(false);
+     const [form] = Form.useForm();
+     const [image, setImage] = useState<string | null>(null);
+     const [showActions, setShowActions] = useState<boolean>(false);
+     const [uploadKey, setUploadKey] = useState<number>(Date.now());
+     const [fileList, setFileList] = useState<UploadFile[]>([]);
+     const [menuId, setMenuId] = useState<number | null>(null);
 
-   // Ma'lumotlarni olish uchun useQuery
-   const { data: foods = [], refetch } = useQuery({
-     queryKey: ["foods"],
-     queryFn: getFoods,
-   });
+     // Ma'lumotlarni olish uchun useQuery
+     const { data: foods = [], refetch } = useQuery({
+       queryKey: ["foods"],
+       queryFn: getFoods,
+     });
 
-  //  const { data: foodData, refetch: refetchFoodData } = useQuery({
-  //    queryKey: ["food", menuId],
-  //    queryFn: () => (menuId ? getFoodById(menuId) : Promise.resolve(null)),
-  //    enabled: !!menuId,
-  //  });
+     const { data: foodData} = useQuery({
+       queryKey: ["food", menuId],
+       queryFn: () => (getFoodById(menuId)),
+       enabled: !!menuId,
+     });
+     console.log(foodData);
+     useEffect(() => {
+       if (foodData) {
+         form.setFieldsValue({
+           title: foodData.name,
+           input1: foodData.count,
+           input2: foodData.price,
+           is_active: foodData.is_active,
+         });
+         setImage(foodData.image);
+         setSelectedModalCategory(foodData.category);
+         setFileList([
+           {
+             uid: "image-uid", // Unique ID for the file
+             name: "image.png", // File name
+             status: "done", // Status
+             url: foodData.image, // Image URL
+           },
+         ]);
+         setIsModalVisible(true); // Modalni ochish
+       }
+     }, [foodData]);
 
-  //  useEffect(() => {
-  //    if (foodData) {
-  //      form.setFieldsValue({
-  //        title: foodData.name,
-  //        input1: foodData.count,
-  //        input2: foodData.price,
-  //        is_active: foodData.is_active,
-  //      });
-  //      setImage(foodData.image);
-  //      setSelectedModalCategory(foodData.category);
-  //      setShowActions(true);
-  //    }
-  //  }, [foodData, form]);
 
-   const showModal = (menu?: FoodCardProps) => {
-     if (menu) {
-       setMenuId(menu.id);
-       setIsModalVisible(true);
-     } else {
+     const showModal = () => {
        form.resetFields();
        setImage(null);
        setShowActions(false);
        setSelectedModalCategory(categories[0].value);
        setMenuId(null);
        setIsModalVisible(true);
-     }
-   };
+     };
 
-   const handleCancel = () => {
-     setIsModalVisible(false);
-   };
-
-   const createMutation = useMutation({
-     mutationFn: async (formData: FormData) => {
-       return createMenu(formData);
-     },
-     onSuccess: () => {
-       message.success("Блюдо успешно создано");
-       form.resetFields();
+     const handleCancel = () => {
        setIsModalVisible(false);
-       refetch();
-     },
-     onError: (error: any) => {
-       if (error.response && error.response.data && error.response.data.name) {
-         message.error("Название блюда уже существует");
-       } else if (
-         error.response &&
-         error.response.data &&
-         error.response.data.image
-       ) {
-         message.error("Пожалуйста, добавьте изображение блюда");
-       } else {
+       setMenuId(null);
+     };
+
+     const createMutation = useMutation({
+       mutationFn: async (formData: FormData) => {
+         return createMenu(formData);
+       },
+       onSuccess: () => {
+         message.success("Блюдо успешно создано");
+         form.resetFields();
+         setIsModalVisible(false);
+         refetch();
+       },
+       onError: (error: any) => {
+         if (
+           error.response &&
+           error.response.data &&
+           error.response.data.name
+         ) {
+           message.error("Название блюда уже существует");
+         } else if (
+           error.response &&
+           error.response.data &&
+           error.response.data.image
+         ) {
+           message.error("Пожалуйста, добавьте изображение блюда");
+         } else {
+           message.error(
+             "Произошла ошибка при создании меню, попробуйте еще раз."
+           );
+         }
+       },
+     });
+
+     const updateMutation = useMutation({
+       mutationFn: (data: { id: number; formData: FormData }) =>
+         updateMenu(data.id, data.formData),
+       onSuccess: () => {
+         message.success("Меню успешно обновлено");
+         refetch();
+         setMenuId(null);
+         setIsModalVisible(false);
+       },
+       onError: (error: any) => {
+         if (
+           error.response &&
+           error.response.data &&
+           error.response.data.name
+         ) {
+           message.error("Название блюда уже существует");
+         } else if (
+           error.response &&
+           error.response.data &&
+           error.response.data.image
+         ) {
+           message.error("Пожалуйста, добавьте изображение блюда");
+         } else {
+           message.error(
+             "Произошла ошибка при обновлении меню, попробуйте еще раз."
+           );
+         }
+       },
+     });
+
+     const deleteMutation = useMutation({
+       mutationFn: (id: number) => deleteMenu(id),
+       onSuccess: () => {
+         message.success("Меню успешно удалено");
+         refetch();
+       },
+       onError: (error) => {
          message.error(
-           "Произошла ошибка при создании меню, попробуйте еще раз."
+           "Произошла ошибка при удалении меню, попробуйте еще раз."
          );
-       }
-     },
-   });
+       },
+     });
 
-  //  const updateMutation = useMutation({
-  //    mutationFn: (data: { id: number; data: FoodCardProps }) =>
-  //      updateMenu(data.id, data.data),
-  //    onSuccess: () => {
-  //      message.success("Меню успешно обновлено");
-  //      refetch();
-  //      queryClient.invalidateQueries(["food", menuId]);
-  //      setIsModalVisible(false);
-  //    },
-  //    onError: (error: any) => {
-  //      if (error.response && error.response.data && error.response.data.name) {
-  //        message.error("Название блюда уже существует");
-  //      } else if (
-  //        error.response &&
-  //        error.response.data &&
-  //        error.response.data.image
-  //      ) {
-  //        message.error("Пожалуйста, добавьте изображение блюда");
-  //      } else {
-  //        message.error(
-  //          "Произошла ошибка при обновлении меню, попробуйте еще раз."
-  //        );
-  //      }
-  //    },
-  //  });
+    const handleChange = (info: UploadChangeParam) => {
+      if (info.fileList.length > 0) {
+        const file = info.fileList[0].originFileObj as RcFile;
+        if (file) {
+          const isImage = file.type.startsWith("image/");
+          if (!isImage) {
+            message.error("Fayl turi rasm bo'lishi kerak!");
+            return;
+          }
 
-   const deleteMutation = useMutation({
-     mutationFn: (id: number) => deleteMenu(id),
-     onSuccess: () => {
-       message.success("Меню успешно удалено");
-       refetch();
-     },
-     onError: (error) => {
-       message.error("Произошла ошибка при удалении меню, попробуйте еще раз.");
-     },
-   });
+          const isLt10M = file.size / 1024 / 1024 < 10;
+          if (!isLt10M) {
+            message.error("Rasm hajmi 10MB dan oshmasligi kerak!");
+            return;
+          }
 
-   const handleSubmit = (values: any) => {
-     const formData = new FormData();
-     formData.append("name", values.title);
-     formData.append("price", values.input2);
-     formData.append("count", values.input1);
-     formData.append("category", selectedModalCategory);
-     formData.append("is_active", values.is_active);
-     if (fileList.length > 0) {
-       formData.append("image", fileList[0].originFileObj as RcFile);
-     }
+          setFileList(info.fileList);
+          setImage(URL.createObjectURL(file));
+        }
+      } else {
+        setFileList([]);
+        setImage(null);
+      }
+    };
 
-     if (menuId) {
-       updateMutation.mutate({
-         id: menuId,
-         data: { ...values, category: selectedModalCategory },
-       });
-     } else {
-       createMutation.mutate(formData);
-     }
-   };
+    const handleUpdateImage = () => {
+      setShowActions(true);
+      setImage(null);
+      setFileList([]);
+    };
 
-   const handleChange = (info: UploadChangeParam) => {
-     if (info.fileList.length > 0) {
-       const file = info.fileList[0].originFileObj as RcFile;
-       if (file) {
-         const isImage = file.type.startsWith("image/");
-         if (!isImage) {
-           message.error("Fayl turi rasm bo'lishi kerak!");
+    
+
+     const handleSubmit = async (values: any) => {
+       const formData = new FormData();
+       formData.append("name", values.title);
+       formData.append("price", values.input2);
+       formData.append("count", values.input1);
+       formData.append("category", selectedModalCategory);
+       formData.append("is_active", values.is_active);
+
+       if (fileList.length > 0 && fileList[0].originFileObj) {
+         formData.append("image", fileList[0].originFileObj as RcFile);
+       } else if (image) {
+         try {
+           const response = await fetch(image);
+           const blob = await response.blob();
+           const file = new File([blob], "image.png", { type: blob.type });
+           formData.append("image", file);
+         } catch (error) {
+           message.error("Rasmni yuklashda xatolik yuz berdi.");
            return;
          }
-
-         const isLt10M = file.size / 1024 / 1024 < 10;
-         if (!isLt10M) {
-           message.error("Rasm hajmi 10MB dan oshmasligi kerak!");
-           return;
-         }
-
-         const reader = new FileReader();
-         reader.onloadend = () => {
-           const imageUrl = reader.result as string;
-           setImage(imageUrl);
-           setShowActions(true);
-         };
-         reader.readAsDataURL(file);
        }
-     }
-     setFileList(info.fileList);
-   };
 
-   const handleDelete = () => {
-     setImage(null);
-     setShowActions(false);
-     setFileList([]);
-   };
+       if (menuId) {
+         updateMutation.mutate({
+           id: menuId,
+           formData,
+         });
+       } else {
+         createMutation.mutate(formData);
+       }
+     };
 
-   const handleUpdate = (id: number) => {
-     const menu = foods.find((food) => food.id === id);
-     if (menu) showModal(menu);
-   };
 
-   const filteredFoods = foods.filter(
-     (food) => food.category === selectedCategory
-   );
+     const handleDelete = () => {
+       setImage(null);
+       setShowActions(false);
+       setFileList([]);
+     };
 
+     const handleUpdate = (id: number) => {
+       setMenuId(id);
+       setShowActions(true);
+     };
+
+     const filteredFoods = foods.filter(
+       (food) => food.category === selectedCategory
+     );
+
+    // const handleUpdateImage = () => {
+    //   setShowActions(true);
+    //   setImage(null);
+    //   setFileList([]);
+    // };
 
   return (
     <div>
@@ -275,7 +310,7 @@ const Menus = () => {
             image={food?.image}
             is_active={food?.is_active}
             formatAmount={formatAmount}
-            onUpdate={()=>{}}
+            onUpdate={handleUpdate}
             onDelete={deleteMutation.mutate}
           />
         ))}
@@ -308,7 +343,7 @@ const Menus = () => {
                   <div className="mt-3 flex space-x-2 flex items-center">
                     <Button
                       className="font-sf-pro text-[14px]"
-                      onClick={handleUpdate}
+                      onClick={handleUpdateImage}
                       type="link"
                     >
                       Изменить

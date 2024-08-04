@@ -34,7 +34,7 @@ const MenuCard: React.FC<FoodCardProps> = ({
           <Switch checked={is_active} />
         </div>
         <div className="w-[96px] flex items-center gap-1">
-          <Button className="bg-blue-100 border-none" onClick={() => onUpdate(id)}>
+          <Button className="bg-blue-100 border-none" onClick={()=>onUpdate(id)}>
             <EditIcon />
           </Button>
           <Button className="bg-red-100 border-none" onClick={() => setdeleteModal(true)}>
