@@ -18,14 +18,14 @@ interface Order {
   status_pay?: string;
 }
 interface UpdateOrderData {
-  pay_type?: string; 
+  pay_type: string; 
   status?: string; 
-  order_type?: string; 
+  order_type: string; 
   items?: Array<{
     food_id: number; 
     quantity: number; 
   }>;
-  status_pay?: string;
+  status_pay: string;
 }
 
 
@@ -70,6 +70,7 @@ interface OrdersParams extends BaseParams {
   min_date?: string;
   max_date?: string;
   date?: string;
+  status_pay?: "paid" | "unpaid";
 }
 
 
@@ -93,6 +94,25 @@ interface Food {
      photos: string[],
   ],
   
+}
+interface Food {
+  id: number;
+  name?: string;
+  image?: string;
+  count?: number;
+  price?: number;
+  category?: string;
+  is_active?: boolean;
+}
+export interface Item {
+  food: Food;
+  quantity: number;
+}
+
+export interface CartItemProps {
+  item: Item;
+  handleRemoveItem: ( itemId: number) => void;
+  handleAddItem: (item: Item) => void;
 }
 
 export type {

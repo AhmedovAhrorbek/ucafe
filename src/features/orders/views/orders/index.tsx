@@ -1,6 +1,6 @@
 import { Button } from "antd";
-import CheckboxG from "../../assets/Checkbox-green.png";
-import CheckboxR from "../../assets/Checkbox-red.png";
+// import CheckboxG from "../../assets/Checkbox-green.png";
+// import CheckboxR from "../../assets/Checkbox-red.png";
 import AddCircle from "../../assets/add-circle.png";
 import { useNavigate } from "react-router-dom";
 import { getOrders, updateOrderStatus } from "../../api"; // Importing updateOrderStatus function
@@ -13,7 +13,7 @@ import {
   Draggable,
   DropResult,
 } from "react-beautiful-dnd";
-import { message } from "antd";
+import { message ,Checkbox} from "antd";
 import OrderCard from "../../components/OrderCard";
 import NoOrders from "../../components/NoOrders";
 
@@ -21,31 +21,44 @@ const Orders = () => {
   const [newOrders, setNewOrders] = useState<Order[]>([]);
   const [inProcessOrders, setInProcessOrders] = useState<Order[]>([]);
   const [finishedOrders, setFinishedOrders] = useState<Order[]>([]);
+  const [showPaid, setShowPaid] = useState<boolean>(null);
   const navigate = useNavigate();
 
-  const { data: newOrdersData } = useQuery({
-    queryKey: ["orders", "new"],
-    queryFn: async () => {
-      const res = await getOrders({ status: "new" });
-      return res.results;
-    },
-  });
+  const fetchOrders = async (status: string, statusPay?: string) => {
+    const res = await getOrders({ status, status_pay: statusPay });
+    return res.results;
+  };
 
-  const { data: inProcessOrdersData } = useQuery({
-    queryKey: ["orders", "processing"],
-    queryFn: async () => {
-      const res = await getOrders({ status: "processing" });
-      return res.results;
-    },
-  });
+    const { data: newOrdersData } = useQuery({
+      queryKey: ["orders", "new", showPaid],
+      queryFn: () =>
+        fetchOrders(
+          "new",
+          showPaid === null ? undefined : showPaid ? "paid" : "unpaid"
+        ),
+      enabled: true, 
+    });
 
-  const { data: finishedOrdersData } = useQuery({
-    queryKey: ["orders", "completed"],
-    queryFn: async () => {
-      const res = await getOrders({ status: "completed" });
-      return res.results;
-    },
-  });
+    const { data: inProcessOrdersData } = useQuery({
+      queryKey: ["orders", "processing", showPaid],
+      queryFn: () =>
+        fetchOrders(
+          "processing",
+          showPaid === null ? undefined : showPaid ? "paid" : "unpaid"
+        ),
+      enabled: true, 
+    });
+
+    const { data: finishedOrdersData } = useQuery({
+      queryKey: ["orders", "completed", showPaid],
+      queryFn: () =>
+        fetchOrders(
+          "completed",
+          showPaid === null ? undefined : showPaid ? "paid" : "unpaid"
+        ),
+      enabled: true, 
+    });
+
 
   useEffect(() => {
     setNewOrders(newOrdersData ?? []);
@@ -121,7 +134,15 @@ const Orders = () => {
 
     await updateOrderStatus(updatedOrder.id, updatedOrder.status);
   };
+   
 
+   const handlePaidChange = (e: any) => {
+     setShowPaid(e.target.checked ? true : null);
+   };
+
+   const handleUnpaidChange = (e: any) => {
+     setShowPaid(e.target.checked ? false : null);
+   };
   return (
     <div>
       <div className="bg-white px-[24px] py-[15px] border-b border-gray-200 pb-5">
@@ -133,14 +154,23 @@ const Orders = () => {
             <p className="font-sf-pro-display text-[16px] font-normal leading-[19.09px] text-left">
               Отображать заказы:
             </p>
-            <p className="flex items-center gap-[10px] font-sf-pro-display text-[16px] font-normal leading-[19.09px] text-left">
-              <img src={CheckboxG} alt="sign" width={24} height={24} />
-              оплаченные
-            </p>
-            <p className="flex items-center gap-[10px] font-sf-pro-display text-[16px] font-normal leading-[19.09px] text-left">
-              <img src={CheckboxR} alt="sign" width={24} height={24} />
-              не оплаченные
-            </p>
+            <div className="flex items-center gap-[10px]">
+              <Checkbox
+                className="flex items-center"
+                checked={showPaid === true}
+                onChange={(e) =>handlePaidChange(e)}
+              >
+                оплаченные
+              </Checkbox>
+              <Checkbox
+                className="flex items-center"
+                checked={showPaid === false}
+                onChange={(e) =>handleUnpaidChange(e)}
+              >
+                не оплаченные
+              </Checkbox>
+            </div>
+
             <Button
               type="primary"
               className="font-sf-pro-display text-[14px] font-medium leading-[16.71px] text-left py-[10px] ml-2"

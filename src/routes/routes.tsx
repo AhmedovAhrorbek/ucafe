@@ -9,7 +9,7 @@ import { ordersHistoryRoutes } from "../features/order-history";
 import { menuManagmentRoutes } from "../features/menu-managment";
 import ReportsRoutes from "../features/reports/routes";
 import { ExpensesRoutes } from "../features/expenses";
-
+import { Navigate } from "react-router-dom";
 const routes: CustomRoute[] = [
   {
     id: "root",
@@ -19,6 +19,12 @@ const routes: CustomRoute[] = [
     loader: async () => null,
     errorElement: <InternalServerError />,
     children: sift([
+      {
+        id: "index",
+        title: "Orders",
+        path: "",
+        element: <Navigate to="/orders" />,
+      },
       allOrdersRoutes,
       ordersHistoryRoutes,
       menuManagmentRoutes,

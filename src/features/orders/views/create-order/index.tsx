@@ -1,8 +1,8 @@
 import React, { useEffect, useState, useReducer } from "react";
-import { Button, List,Image,Select, message } from "antd";
+import { Button, List, Select, message } from "antd";
 import { useNavigate } from "react-router-dom";
 import arrowLeftIcon from "../../assets/arrow-left-02-round.png";
-import { produce } from "immer";
+// import { produce } from "immer";
 import { useMutation } from "@tanstack/react-query";
 import queryClient from "../../../../utils/query-client";
 import { getFoods, createOrder } from "../../api";
@@ -246,34 +246,30 @@ const CreateOrder: React.FC = () => {
               bordered={false}
               renderItem={(item) => (
                 // console.log(item),
-                (
-                  <List.Item className="flex items-center justify-between mx-10 mb-3 h-[49px] mt-5 mb-5 pb-1">
-                    <div className="flex items-center">
-                      <CartItem
-                        key={item.id}
-                        item={item}
-                        handleRemoveItem={handleRemoveItem}
-                        handleAddItem={handleAddItem}
-                        activeCart={activeCart}
-                      />
-                    </div>
-                    <div className="flex flex-col items-center">
-                      <span className="text-lg font-medium w-30">
-                        {formatAmount(item?.price * item?.count)} UZS
-                      </span>
+                <List.Item className="flex items-center justify-between mx-10 mb-3 h-[49px] mt-5 mb-5 pb-1">
+                  <div className="flex items-center">
+                    <CartItem
+                      key={item.id}
+                      item={item}
+                      handleRemoveItem={handleRemoveItem}
+                      handleAddItem={handleAddItem}
+                      activeCart={activeCart}
+                    />
+                  </div>
+                  <div className="flex flex-col items-center">
+                    <span className="text-lg font-medium w-30">
+                      {formatAmount(item?.price * item?.count)} UZS
+                    </span>
 
-                      <button
-                        type="button"
-                        className="bg-transparent text-[#FF1F00] hover:text-red-400 transition active:text-red-500"
-                        onClick={() =>
-                          handleRemoveAllItems(activeCart, item.id)
-                        }
-                      >
-                        Удалить
-                      </button>
-                    </div>
-                  </List.Item>
-                )
+                    <button
+                      type="button"
+                      className="bg-transparent text-[#FF1F00] hover:text-red-400 transition active:text-red-500"
+                      onClick={() => handleRemoveAllItems(activeCart, item.id)}
+                    >
+                      Удалить
+                    </button>
+                  </div>
+                </List.Item>
               )}
             />
 
@@ -326,12 +322,12 @@ const CreateOrder: React.FC = () => {
               </div>
             </div>
             <Button
-              className="w-full mt-3"
+              className="w-full mt-3 flex items-center gapr-2"
               type="primary"
               size="large"
               onClick={handlePayment}
             >
-              Оплатить
+              Создавать
             </Button>
           </div>
         )}

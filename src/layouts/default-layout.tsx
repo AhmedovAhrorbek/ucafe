@@ -10,6 +10,7 @@ import ReportsIcon from "../components/reportsIcon";
 import ExpensesIcon from "../components/expensesIcon";
 import ExitIcon from "../components/exitIcon";
 import { useNavigate } from "react-router-dom";
+import './layout.scss'
 interface Props {
   children: React.ReactElement;
   sidebarRoutes: CustomRoute[];
@@ -70,13 +71,14 @@ export default function DefaultLayout(props: Props): React.ReactElement {
    );
 
     const location = useLocation();
-     const linkStyle = `
-    text-gray-700 hover:text-[rgba(85,102,255,1)] font-sans text-[16px] font-medium leading-[19.09px] text-left
-    relative 
-    transition duration-300
-  `;
+  //    const linkStyle = `
+  //   text-gray-700 hover:text-[rgba(85,102,255,1)] font-sans text-[16px] font-medium leading-[19.09px] text-left
+  //   relative 
+  //   transition duration-300
+  // `;
 
-     const activeLinkStyle = 'text-[rgba(85,102,255,1)] border-b-2 border-[rgba(85,102,255,1)]';
+  //    const activeLinkStyle =
+  //      "border-b-2 border-[rgba(85,102,255,1)] text-[rgba(85,102,255,1)]";
 
   return (
     <Layout className="min-h-screen">
@@ -96,10 +98,10 @@ export default function DefaultLayout(props: Props): React.ReactElement {
             />
             <Link
               to="/orders"
-              className={`${linkStyle} ${
+              className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
                 location.pathname === "/orders" ||
                 location.pathname === "/orders/create-order"
-                  ? activeLinkStyle
+                  ? `activeLinkStyle`
                   : ""
               }`}
             >
@@ -107,16 +109,18 @@ export default function DefaultLayout(props: Props): React.ReactElement {
             </Link>
             <Link
               to="/menu-management"
-              className={`${linkStyle} ${
-                location.pathname === "/menu-management" ? activeLinkStyle : ""
+              className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                location.pathname === "/menu-management"
+                  ? `activeLinkStyle`
+                  : ""
               }`}
             >
               Управление меню
             </Link>
             <Link
               to="/orders-history"
-              className={`${linkStyle} ${
-                location.pathname === "/orders-history" ? activeLinkStyle : ""
+              className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                location.pathname === "/orders-history" ? `activeLinkStyle` : ""
               }`}
             >
               История заказов

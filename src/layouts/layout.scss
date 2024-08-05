@@ -1,0 +1,21 @@
+$linkColor: #5566FF;
+$linkHoverColor: rgba(85, 102, 255, 1);
+
+.linkStyle {
+    color: #4a4a4a; 
+    font-size: 16px;
+    font-weight: 500; 
+    line-height: 19.09px;
+    text-align: left;
+    position: relative;
+    transition: color 0.3s;
+    border-bottom: 2px solid transparent;
+    &:hover {
+        color: $linkHoverColor;
+    }
+}
+
+.activeLinkStyle {
+    border-bottom: 2px solid $linkHoverColor;
+    color: $linkHoverColor;
+}

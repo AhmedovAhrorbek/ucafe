@@ -8,7 +8,10 @@ export async function getOrders(
   const res: ListResponse<Order[]> = await request({
     url: "orders/",
     method: "get",
-    params,
+    params: {
+      ...params,
+      status_pay: params?.status_pay,
+    },
   });
   return res;
 }
