@@ -14,7 +14,7 @@ const Login: React.FC = () => {
   const navigate = useNavigate();
   const { setIsAuth } = useAuthContext();
 
-  const { mutate, isLoading } = useMutation({
+  const { mutate } = useMutation({
     mutationFn: login,
     onSuccess: (res) => {
       localStorage.setItem("refresh_token", res.refresh);
@@ -92,7 +92,6 @@ const Login: React.FC = () => {
               htmlType="submit"
               size="large"
               className="flex items-center justify-center"
-              loading={isLoading}
             >
               <img src={loginIcon} alt="login icon" width={15} height={15} />
                login to account

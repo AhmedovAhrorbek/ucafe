@@ -11,6 +11,7 @@ import ExpensesIcon from "../components/expensesIcon";
 import ExitIcon from "../components/exitIcon";
 import { useNavigate } from "react-router-dom";
 import './layout.scss'
+import UserGroupIcon from "../components/userGroupIcon";
 interface Props {
   children: React.ReactElement;
   sidebarRoutes: CustomRoute[];
@@ -51,7 +52,7 @@ export default function DefaultLayout(props: Props): React.ReactElement {
   };
 
    const userMenu = (
-     <Menu className="w-[230px]">
+     <Menu className="w-[250px]">
        <Menu.Item key="reports" onClick={() => navigate("/reports")}>
          <div className="flex items-center gap-3">
            <ReportsIcon /> Отчеты
@@ -60,6 +61,11 @@ export default function DefaultLayout(props: Props): React.ReactElement {
        <Menu.Item key="expenses" onClick={() => navigate("/expenses")}>
          <div className="flex items-center gap-3 mb-2">
            <ExpensesIcon /> Расходы
+         </div>
+       </Menu.Item>
+       <Menu.Item key="users" onClick={() => navigate("/users")}>
+         <div className="flex items-center gap-3 mb-2">
+           <UserGroupIcon /> Управление сотрудниками
          </div>
        </Menu.Item>
        <Menu.Item key="logout" onClick={handleConfirm}>

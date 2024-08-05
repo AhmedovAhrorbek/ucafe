@@ -87,13 +87,16 @@ const CreateOrder: React.FC = () => {
     dispatch({ type: "ADD_CART" });
     setActiveCart(carts.length); // Set the new cart as active
   };
-
-  const handleRemoveCart = (index: number) => {
-    dispatch({ type: "REMOVE_CART", payload: index });
-    if (activeCart === index) {
-      setActiveCart(carts.length > 1 ? 0 : null); // Deselect or set the first cart as active if there's one left
-    }
-  };
+ const handleRemoveCart = (index: number) => {
+   // Only proceed if the index is valid and within bounds
+   if (index >= 0 && index < carts.length) {
+     dispatch({ type: "REMOVE_CART", payload: index });
+     if (activeCart === index) {
+       // If the removed cart was active, set the new active cart or null if no carts are left
+       setActiveCart(carts.length > 1 ? 0 : null);
+     }
+   }
+ };
 
   const handleAddItem = (cartIndex: number, item: CartItem) => {
     dispatch({ type: "ADD_ITEM", payload: { cartIndex, item } });
@@ -144,7 +147,7 @@ const CreateOrder: React.FC = () => {
                 navigate("/orders");
               }}
             />
-            <div className="container flex items-center p-4 pt-0 pb-0">
+            <div className="container flex flex-wrap items-center p-4 pt-0 pb-0">
               {carts.map((cart, index) => (
                 <div
                   key={index}
@@ -236,13 +239,13 @@ const CreateOrder: React.FC = () => {
         </div>
       </div>
       <div className="w-full border-l border-gray-200 bg-white">
-        {activeCart !== null && (
+        {carts.length > 0 && activeCart !== null && (
           <div className="mb-4">
             <div className="flex justify-between items-center border border-gray-200 py-2.5 px-4">
               <h2 className="text-lg font-bold">Заказ №{activeCart + 1}</h2>
             </div>
             <List
-              dataSource={carts[activeCart].items}
+              dataSource={carts[activeCart]?.items}
               bordered={false}
               renderItem={(item) => (
                 // console.log(item),
@@ -313,7 +316,7 @@ const CreateOrder: React.FC = () => {
               <div className="flex items-center justify-between">
                 <p>Итоговая сумма</p>
                 <span className="text-xl font-medium">
-                  {carts[activeCart].items.reduce(
+                  {carts[activeCart]?.items.reduce(
                     (total, item) => total + item.price * item.count,
                     0
                   )}{" "}

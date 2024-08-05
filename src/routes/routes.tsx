@@ -10,6 +10,7 @@ import { menuManagmentRoutes } from "../features/menu-managment";
 import ReportsRoutes from "../features/reports/routes";
 import { ExpensesRoutes } from "../features/expenses";
 import { Navigate } from "react-router-dom";
+import UsersRoutes from "../features/users/routes";
 const routes: CustomRoute[] = [
   {
     id: "root",
@@ -30,6 +31,7 @@ const routes: CustomRoute[] = [
       menuManagmentRoutes,
       ReportsRoutes,
       ExpensesRoutes,
+      UsersRoutes,
       {
         id: "local-not-found",
         title: "not-found",
