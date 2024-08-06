@@ -278,12 +278,12 @@ const Menus = () => {
           Добавить блюдо
         </Button>
       </div>
-      <div className="flex items-center justify-between px-6 my-3">
+      <div className="flex flex-wrap items-center justify-between gap-2 px-6 my-3">
         {categories.map((item, index) => (
           <div
             key={index}
             onClick={() => setSelectedCategory(item.value)}
-            className={`w-[218px] px-[16px] py-[8px] font-sf-pro rounded-[5px] flex items-center gap-3 border border-[#edebeb] cursor-pointer text-lg font-medium leading-[19.09px] text-left hover:text-[#5566FF] hover:border-[#5566FF] ${
+            className={`w-full sm:w-[218px] px-[16px] py-[8px] font-sf-pro rounded-[5px] flex items-center gap-3 border border-[#edebeb] cursor-pointer text-lg font-medium leading-[19.09px] text-left hover:text-[#5566FF] hover:border-[#5566FF] ${
               selectedCategory === item.value
                 ? "bg-gray-100 text-[#5566FF]"
                 : "bg-white"
@@ -324,7 +324,7 @@ const Menus = () => {
         footer={null}
       >
         <Form form={form} onFinish={handleSubmit}>
-          <div className="flex items-center gap-[30px] mt-5">
+          <div className="flex flex-col sm:flex-row items-center gap-[30px] mt-5">
             <div className="flex flex-col items-center">
               <Image src={image} width={120} height={120} />
             </div>
@@ -333,14 +333,14 @@ const Menus = () => {
               listType="picture"
               beforeUpload={() => false}
               onChange={handleChange}
-              className="w-[372px]"
+              className="w-full sm:w-[372px]"
               showUploadList={false}
               fileList={fileList}
               key={uploadKey}
             >
               <a className="font-sf-pro text-blue-500">
                 {showActions ? (
-                  <div className="mt-3 flex space-x-2 flex items-center">
+                  <div className="mt-3 flex space-x-2 items-center">
                     <Button
                       className="font-sf-pro text-[14px]"
                       onClick={handleUpdateImage}
@@ -368,12 +368,12 @@ const Menus = () => {
               </p>
             </Upload>
           </div>
-          <div className="flex items-center justify-between mt-3 mb-5">
+          <div className="flex flex-wrap items-center justify-center gap-3 mt-3 mb-5">
             {categories.map((item, index) => (
               <div
                 key={index}
                 onClick={() => setSelectedModalCategory(item.value)}
-                className={`w-[140px] px-[16px] py-[8px] font-sf-pro rounded-[5px] flex items-center gap-3 border border-[#edebeb] cursor-pointer text-lg font-medium leading-[19.09px] text-left hover:text-[#5566FF] hover:border-[#5566FF] ${
+                className={`w-full sm:w-[140px] px-[16px] py-[8px] font-sf-pro rounded-[5px] flex items-center gap-3 border border-[#edebeb] cursor-pointer text-lg font-medium leading-[19.09px] text-left hover:text-[#5566FF] hover:border-[#5566FF] ${
                   selectedModalCategory === item.value
                     ? "bg-gray-100 text-[#5566FF]"
                     : "bg-white"
@@ -396,7 +396,7 @@ const Menus = () => {
             <Input />
           </Form.Item>
           <Row gutter={16}>
-            <Col span={12}>
+            <Col span={24} sm={12}>
               <Form.Item
                 label="Количество"
                 name="input1"
@@ -405,7 +405,7 @@ const Menus = () => {
                 <Input type="number" min={0} />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={24} sm={12}>
               <Form.Item
                 label="Цена"
                 name="input2"
@@ -416,7 +416,7 @@ const Menus = () => {
             </Col>
           </Row>
           <Row gutter={16}>
-            <Col span={12}>
+            <Col span={24} sm={12}>
               <Form.Item
                 name="is_active"
                 valuePropName="checked"
@@ -425,7 +425,7 @@ const Menus = () => {
                 <Switch />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col span={24} sm={12}>
               <Form.Item>
                 <Button type="primary" htmlType="submit" className="w-full">
                   {menuId ? "Обновить блюдо" : "Добавить блюдо"}

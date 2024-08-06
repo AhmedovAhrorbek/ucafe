@@ -53,21 +53,19 @@ const PaymentMethodsStat = ({ data, title }) => {
   };
 
   return (
-    <div className=" bg-white w-[688px] h-[325px] p-4 rounded-[6px]">
-      <h2 className="font-sf-pro text-[18px] font-medium leading-[21px] text-left">
+    <div className="bg-white w-full max-w-[688px] h-auto p-4 rounded-[6px]">
+      <h2 className="font-sf-pro text-[18px] font-medium leading-[21px] text-left mb-4">
         Статистика по популярным способам оплаты за {title}
       </h2>
-      <div className="flex items-center w-[688px]">
-        <div>
-          <div style={{ width: 300, height: 300 }}>
-            <Pie {...config} />
-          </div>
+      <div className="flex flex-col lg:flex-row items-center gap-6">
+        <div className="flex-shrink-0 w-full lg:w-[300px] h-[300px]">
+          <Pie {...config} />
         </div>
-        <div className="flex flex-col gap-5">
+        <div className="flex flex-col gap-5 w-full lg:w-[348px]">
           {data.map((item, index) => (
             <div
               key={index}
-              className="flex items-center justify-between w-[348px]"
+              className="flex items-center justify-between w-full"
             >
               <div className="flex items-center w-[98px]">
                 <span

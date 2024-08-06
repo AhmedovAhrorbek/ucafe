@@ -157,6 +157,7 @@ const Expenses = () => {
     setIsModalVisible(false);
     setIsEditMode(false);
     setEditingExpenseId(null);
+    window.location.reload();
   };
 
   const handleDeleteModalOk = () => {
@@ -178,27 +179,34 @@ const Expenses = () => {
 
   return (
     <div>
-      <div className="flex items-center py-3 px-6 justify-between bg-white">
-        <h2 className="font-sf-pro text-2xl font-semibold leading-[28.64px] text-left">
+      <div className="flex flex-col md:flex-row items-center py-3 px-6 justify-between bg-white">
+        <h2 className="font-sf-pro text-2xl font-semibold leading-[28.64px] text-left mb-4 md:mb-0">
           Расходы
         </h2>
-        <div className="flex items-center gap-4">
+        <div className="flex flex-col md:flex-row items-center gap-4">
           <RangePicker
-            className="w-72"
+            className="w-full md:w-72"
             placeholder={["Start Date", "End Date"]}
             onChange={handleDateRangeChange}
             allowClear
           />
           <Button
-            className="flex items-center"
+            className="flex items-center mt-4 md:mt-0"
             type="primary"
             onClick={handleAddExpenseClick}
           >
-            <img src={AddCircle} alt="plus icon" width={20} height={20} />
+            <img
+              src={AddCircle}
+              alt="plus icon"
+              width={20}
+              height={20}
+              className="mr-2"
+            />
             Добавить расход
           </Button>
         </div>
       </div>
+
       <div className="mt-5">
         {isLoading ? (
           <p>
@@ -228,11 +236,13 @@ const Expenses = () => {
         )}
       </div>
       <Modal
-        width={739}
         title={isEditMode ? "Редактировать расход" : "Добавить расход"}
         open={isModalVisible}
         onCancel={handleModalCancel}
         footer={false}
+        centered
+        width="90%"
+        style={{ maxWidth: "600px" }}
       >
         <Form
           layout="vertical"
@@ -240,7 +250,7 @@ const Expenses = () => {
           initialValues={{ date: "", price: "", description: "" }}
         >
           <Row gutter={16}>
-            <Col span={12}>
+            <Col xs={24} sm={12}>
               <Form.Item
                 name="date"
                 label="Выберите дату"
@@ -249,7 +259,7 @@ const Expenses = () => {
                 <DatePicker style={{ width: "100%" }} />
               </Form.Item>
             </Col>
-            <Col span={12}>
+            <Col xs={24} sm={12}>
               <Form.Item
                 name="price"
                 label="Сумма расхода"
@@ -268,7 +278,7 @@ const Expenses = () => {
           </Form.Item>
           <div className="flex items-center justify-end">
             <Button type="primary" onClick={handleModalOk}>
-              {isEditMode ? "Сохранить изменения" : "Добавить расход"}{" "}
+              {isEditMode ? "Сохранить изменения" : "Добавить расход"}
             </Button>
           </div>
         </Form>
@@ -283,16 +293,19 @@ const Expenses = () => {
         open={isDeleteModalVisible}
         onCancel={() => setIsDeleteModalVisible(false)}
         footer={null}
+        centered
+        width="90%"
+        style={{ maxWidth: "400px" }}
       >
         <div className="text-center p-3">
-          <div className="mb-5" onClick={handleDeleteModalCancel}>
-            <DeleteIcon className="w-[32px]" />
+          <div className="mb-5 flex justify-center">
+            <DeleteIcon className="w-[32px] text-[#FF4D4F]" />
           </div>
           <div>
-            <p className="font-sf-pro text-[16px] text-[#2F3138] w-[343px] mx-auto mb-4">
+            <p className="font-sf-pro text-[16px] text-[#2F3138] mx-auto mb-4 px-4">
               Вы уверены, что хотите удалить выбранное блюдо из меню?
             </p>
-            <div className="flex items-center justify-center gap-3">
+            <div className="flex items-center justify-center gap-3 flex-wrap">
               <Button onClick={handleDeleteModalCancel}>Отменить</Button>
               <Button onClick={handleDeleteModalOk} danger type="primary">
                 Удалить

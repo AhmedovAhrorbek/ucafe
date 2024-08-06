@@ -212,13 +212,13 @@ const Reports = () => {
      };
   return (
     <>
-      <div className="flex items-center justify-between px-6 py-3 bg-white">
-        <h2 className="text-[#2F3138] font-sf-pro-display text-[24px] font-medium leading-24 text-left">
+      <div className="flex flex-col md:flex-row items-center justify-between px-6 py-3 bg-white">
+        <h2 className="text-[#2F3138] font-sf-pro-display text-[24px] font-medium leading-24 text-left mb-4 md:mb-0">
           Отчеты
         </h2>
-        <div className="w-[659px] flex items-center justify-between">
+        <div className="w-full md:w-[659px] flex flex-col md:flex-row items-center justify-between">
           <Select
-            className="w-[196px]"
+            className="w-full md:w-[196px] mb-4 md:mb-0"
             defaultValue="Выбирать"
             value={period}
             onChange={handleChangeDate}
@@ -231,7 +231,7 @@ const Reports = () => {
             <Select.Option value="Год">Год</Select.Option>
           </Select>
           <RangePicker
-            className="w-72"
+            className="w-full md:w-72 mb-4 md:mb-0"
             placeholder={["start_date", "end_date"]}
             value={[dateRange[0], dateRange[1]]}
             onChange={handleRangePickerChange}
@@ -241,55 +241,72 @@ const Reports = () => {
           </Button>
         </div>
       </div>
-      <div className="flex items-center justify-between mx-6">
+
+      <div className="flex flex-wrap gap-6 mx-6">
         {totalIncome !== null && (
-          <IncomeCard
-            total_income={totalIncome}
-            percentage_change={incomeChange}
-            title={title}
-          />
+          <div className="flex-1 min-w-[250px] max-w-[300px]">
+            <IncomeCard
+              total_income={totalIncome}
+              percentage_change={incomeChange}
+              title={title}
+            />
+          </div>
         )}
         {totalExpenses !== null && (
-          <ExpensesCard
-            total_expenses={totalExpenses}
-            percentage_change={expensesChange}
-            title={title}
-          />
+          <div className="flex-1 min-w-[250px] max-w-[300px]">
+            <ExpensesCard
+              total_expenses={totalExpenses}
+              percentage_change={expensesChange}
+              title={title}
+            />
+          </div>
         )}
         {totalSales !== null && (
-          <SalesCard
-            total_sales={totalSales}
-            percentage_change={salesChange}
-            title={title}
-          />
+          <div className="flex-1 min-w-[250px] max-w-[300px]">
+            <SalesCard
+              total_sales={totalSales}
+              percentage_change={salesChange}
+              title={title}
+            />
+          </div>
         )}
         {takeoutOrders !== null && (
-          <OrderMyselfCard
-            takeout_orders={takeoutOrders}
-            takeout_percentage_change={takeoutOrdersP}
-            tekout_title={title}
-          />
+          <div className="flex-1 min-w-[250px] max-w-[300px]">
+            <OrderMyselfCard
+              takeout_orders={takeoutOrders}
+              takeout_percentage_change={takeoutOrdersP}
+              tekout_title={title}
+            />
+          </div>
         )}
         {deliveryOrders !== null && (
-          <OrdersDeliveryCard
-            delivery_orders={deliveryOrders}
-            delivery_percentage_change={deliveryOrdersP}
-            delivery_title={title}
-          />
+          <div className="flex-1 min-w-[250px] max-w-[300px]">
+            <OrdersDeliveryCard
+              delivery_orders={deliveryOrders}
+              delivery_percentage_change={deliveryOrdersP}
+              delivery_title={title}
+            />
+          </div>
         )}
       </div>
+
       <div className="mx-6 mt-3 mb-3">
         <TypeOrderStatistics data={salesByDayWeekData} />
       </div>
-      <div className="mt-5 mx-6 flex items-center justify-between">
+      <div className=" mt-5 mx-6  flex justify-between flex-wrap gap-6">
         {paymentMethodsData && (
           <PaymentMethodsStat data={paymentMethodsData} title={title} />
         )}
         {categoryStatisticsData && (
           <CategoryStatistics data={categoryStatisticsData} title={title} />
         )}
-        {isLoading && <Spinner />}
+        {isLoading && (
+          <div className="flex-1 min-w-[300px]">
+            <Spinner />
+          </div>
+        )}
       </div>
+
       <div className="mt-7 mx-6">
         <ul className="flex items-center gap-5">
           {["Проданные товары", "Список заказов"].map((item, index) => (
@@ -310,20 +327,20 @@ const Reports = () => {
         <div className="mt-5">
           {activeIndex === 0 && (
             <>
-              <ul className="flex items-center  justify-between mb-5 px-4">
-                <li className="w-[150px] font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
+              <ul className="flex flex-col sm:flex-row items-center justify-between mb-5 px-4 gap-4 sm:gap-0">
+                <li className="w-full sm:w-[150px] font-sf-pro-display text-[14px] sm:text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
                   Наименование
                 </li>
-                <li className="w-[150px] font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B] ml-5">
+                <li className="w-full sm:w-[150px] font-sf-pro-display text-[14px] sm:text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
                   Категории
                 </li>
-                <li className=" font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
+                <li className="w-full sm:w-[150px] font-sf-pro-display text-[14px] sm:text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
                   Кол-во продаж
                 </li>
-                <li className=" font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
+                <li className="w-full sm:w-[150px] font-sf-pro-display text-[14px] sm:text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
                   Цена за единицу товара
                 </li>
-                <li className=" font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
+                <li className="w-full sm:w-[150px] font-sf-pro-display text-[14px] sm:text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
                   Общая сумма продаж
                 </li>
               </ul>
@@ -338,29 +355,29 @@ const Reports = () => {
           )}
           {activeIndex === 1 && (
             <>
-              <ul className="flex items-center  justify-between mb-5 px-4">
-                <li className="w-[140px] font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
+              {/* <ul className="flex flex-wrap items-center justify-between mb-5 px-4 gap-4">
+                <li className="flex-1 min-w-[140px] font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
                   Наименование
                 </li>
-                <li className="w-[130px] font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B] ml-5">
+                <li className="flex-1 min-w-[130px] font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
                   Дата
                 </li>
-                <li className="w-[100px] mr-12 font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B] ml-5">
+                <li className="flex-1 min-w-[100px] font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
                   Позиция
                 </li>
-                <li className=" mr-10 font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
+                <li className="flex-1 min-w-[150px] font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
                   Тип заказа
                 </li>
-                <li className=" mr-10 font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
+                <li className="flex-1 min-w-[150px] font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
                   Способ оплаты
                 </li>
-                <li className=" mr-5 font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
+                <li className="flex-1 min-w-[150px] font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
                   Сумма
                 </li>
-                <li className=" font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
+                <li className="flex-1 min-w-[150px] font-sf-pro-display text-[16px] font-medium leading-[19.09px] text-left text-[#7D848B]">
                   Статус платежа
                 </li>
-              </ul>
+              </ul> */}
               <div className="mt-4 mx-4">
                 {data?.results ? (
                   <>

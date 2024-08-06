@@ -73,20 +73,20 @@ const OrdersHistory = () => {
 
   return (
     <div>
-      <div className="bg-white rounded-md flex items-center px-6 justify-between py-3">
-        <div className="mb-4">
+      <div className="bg-white rounded-md flex flex-wrap items-center px-6 justify-between py-3">
+        <div className="w-full mb-4 md:w-auto">
           <h2 className="font-sfpro text-2xl font-semibold leading-7 text-left">
             История заказов ({data?.count})
           </h2>
         </div>
-        <div className="flex space-x-4">
+        <div className="flex flex-wrap space-x-4 w-full md:w-auto">
           <RangePicker
-            className="w-96"
+            className="w-full md:w-96 mb-4 md:mb-0"
             placeholder={["Start Date", "End Date"]}
             onChange={handleDateRangeChange}
           />
           <Select
-            className="w-48 custom-select"
+            className="w-full md:w-48 custom-select mb-4 md:mb-0"
             placeholder="Все способы оплаты"
             value={payType}
             onChange={handlePayTypeChange}
@@ -106,7 +106,7 @@ const OrdersHistory = () => {
             </Select.Option>
           </Select>
           <Select
-            className="w-48 custom-select"
+            className="w-full md:w-48 custom-select"
             placeholder="Все типы заказов"
             value={orderType}
             onChange={handleOrderTypeChange}
@@ -124,6 +124,7 @@ const OrdersHistory = () => {
           </Select>
         </div>
       </div>
+
       <div className="mt-4 mx-4">
         {data?.results ? (
           <>

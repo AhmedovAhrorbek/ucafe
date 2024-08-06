@@ -79,12 +79,12 @@ const TypeOrderStatistics: React.FC<TypeOrderStatisticsProps> = ({ data }) => {
 
   return (
     <div className="card mt-5 bg-white p-6 rounded-[6px]">
-      <div className="flex px-12 items-center justify-between">
-        <h3 className="font-fs-pro-display text-[18px] font-medium leading-[21px] text-left">
+      <div className="flex flex-col md:flex-row items-center justify-between px-6 md:px-12 py-4">
+        <h3 className="font-fs-pro-display text-[18px] font-medium leading-[21px] text-left mb-4 md:mb-0">
           График продаж по типам заказов
         </h3>
-        <div className="flex items-center justify-between w-[200px]">
-          <p className="flex items-center gap-1 font-fs-pro-display text-[16px]  text-left">
+        <div className="flex flex-col md:flex-row items-start justify-between w-full md:w-[200px]">
+          <p className="flex items-center gap-2 font-fs-pro-display text-[16px] text-left mb-2 md:mb-0">
             <span
               style={{
                 width: 12,
@@ -96,7 +96,7 @@ const TypeOrderStatistics: React.FC<TypeOrderStatisticsProps> = ({ data }) => {
             />
             с собой
           </p>
-          <p className="flex items-center gap-1 font-fs-pro-display text-[16px]  text-left">
+          <p className="flex items-center gap-2 font-fs-pro-display text-[16px] text-left">
             <span
               style={{
                 width: 12,
@@ -110,6 +110,7 @@ const TypeOrderStatistics: React.FC<TypeOrderStatisticsProps> = ({ data }) => {
           </p>
         </div>
       </div>
+
       <ReactApexChart
         options={options}
         series={series}

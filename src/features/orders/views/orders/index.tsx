@@ -145,51 +145,51 @@ const Orders = () => {
    };
   return (
     <div>
-      <div className="bg-white px-[24px] py-[15px] border-b border-gray-200 pb-5">
-        <div className="flex items-center justify-between">
-          <h1 className="font-sf-pro-display text-[24px] font-semibold leading-[28.64px] text-left">
+      <div className="bg-white px-6 py-4 border-b border-gray-200">
+        <div className="flex items-center flex-col md:flex-row  justify-between">
+          <h1 className="font-sf-pro-display text-2xl font-semibold mb-4 lg:mb-0">
             Все заказы
           </h1>
-          <div className="flex items-center justify-between w-[608px]">
-            <p className="font-sf-pro-display text-[16px] font-normal leading-[19.09px] text-left">
+          <div className="flex flex-col md:flex-row items-center md:space-x-4 space-y-2 md:space-y-0 w-full md:w-auto">
+            <p className="font-sf-pro-display text-base font-normal">
               Отображать заказы:
             </p>
-            <div className="flex items-center gap-[10px]">
+            <div className="flex items-center space-x-2">
               <Checkbox
                 className="flex items-center"
                 checked={showPaid === true}
-                onChange={(e) =>handlePaidChange(e)}
+                onChange={(e) => handlePaidChange(e)}
               >
                 оплаченные
               </Checkbox>
               <Checkbox
                 className="flex items-center"
                 checked={showPaid === false}
-                onChange={(e) =>handleUnpaidChange(e)}
+                onChange={(e) => handleUnpaidChange(e)}
               >
                 не оплаченные
               </Checkbox>
             </div>
-
             <Button
               type="primary"
-              className="font-sf-pro-display text-[14px] font-medium leading-[16.71px] text-left py-[10px] ml-2"
+              className="font-sf-pro-display text-sm font-medium py-2 ml-0 md:ml-2 flex items-center space-x-1"
               onClick={() => navigate("create-order")}
             >
               <img src={AddCircle} alt="add icon" width={20} height={20} />
-              Создать заказ
+              <span>Создать заказ</span>
             </Button>
           </div>
         </div>
       </div>
+
       <div className="flex flex-col relative">
-        <div className="py-6 pt-10 flex justify-center gap-6 bg-white">
+        <div className="py-6 pt-10 flex flex-wrap   justify-center  gap-6 bg-white">
           <DragDropContext onDragEnd={handleDragEnd}>
             <Droppable droppableId="droppable">
               {(provided) => (
                 <div
                   ref={provided.innerRef}
-                  className="bg-[#F5F5F5] w-[470px] min-h-[600px] rounded-tr-[8px] relative"
+                  className="bg-[#F5F5F5] w-[470px]  md:mb-5  min-h-[600px] rounded-tr-[8px] relative"
                 >
                   <p className="rounded-tr-[8px] absolute top-[-29px] left-0 bg-[#F5F5F5] px-3 py-1 text-medium">
                     Новые ({newOrders.length})
@@ -215,7 +215,7 @@ const Orders = () => {
                       </Draggable>
                     ))
                   ) : (
-                    <div className="flex items-center justify-center mt-[200px]">
+                    <div className="flex items-center justify-center  mt-[200px]">
                       <NoOrders />
                     </div>
                   )}
@@ -228,7 +228,7 @@ const Orders = () => {
               {(provided) => (
                 <div
                   ref={provided.innerRef}
-                  className="bg-[#F5F5F5] w-[470px] rounded-tr-[8px] relative"
+                  className="bg-[#F5F5F5] w-[470px]  md:mb-5  rounded-tr-[8px] relative"
                 >
                   <p className="rounded-tr-[8px] absolute top-[-29px] left-0 bg-[#F5F5F5] px-3 py-1 text-medium">
                     В процессе ({inProcessOrders.length})

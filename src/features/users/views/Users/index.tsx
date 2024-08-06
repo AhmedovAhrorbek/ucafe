@@ -41,13 +41,13 @@ const Users = () => {
 
   return (
     <div>
-      <div className="flex items-center justify-between px-6 py-3 bg-white">
-        <h2 className="font-sf-pro text-2xl font-semibold leading-[28.64px] text-left">
+      <div className="flex flex-col sm:flex-row items-center justify-between px-4 py-3 bg-white">
+        <h2 className="text-xl sm:text-2xl font-semibold leading-[28.64px] text-left">
           Управление сотрудниками
         </h2>
         <Button
           type="primary"
-          className="font-sf-pro-display text-[14px] font-medium leading-[16.71px] text-left py-[10px] ml-2"
+          className="text-sm sm:text-[14px] font-medium leading-[16.71px] text-left py-2 sm:py-[10px] ml-0 sm:ml-2 mt-2 sm:mt-0"
           onClick={showModal}
         >
           <img src={AddCircle} alt="add icon" width={20} height={20} />

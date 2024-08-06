@@ -1,5 +1,5 @@
-import { Layout, Avatar, Dropdown, Menu ,Modal } from "antd";
-import {  DownOutlined } from "@ant-design/icons";
+import { Layout, Avatar, Dropdown, Menu ,Modal, Button,  Drawer } from "antd";
+import {  DownOutlined , MenuOutlined} from "@ant-design/icons";
 import Logo from '../assets/LayoutImges/Navbar-logo.png'
 import { CustomRoute } from "../types";
 import { Link, useLocation }  from 'react-router-dom'
@@ -23,6 +23,7 @@ export default function DefaultLayout(props: Props): React.ReactElement {
   const { children} = props;
   const { setIsAuth } = useAuthContext();
   const [open, setOpen] = useState(false);
+    const [drawerVisible, setDrawerVisible] = useState(false);
   const navigate = useNavigate();
   const logout = (): void => {
     
@@ -49,6 +50,14 @@ export default function DefaultLayout(props: Props): React.ReactElement {
         setOpen(false);
       },
     });
+  };
+
+  const showDrawer = () => {
+    setDrawerVisible(true);
+  };
+
+  const closeDrawer = () => {
+    setDrawerVisible(false);
   };
 
    const userMenu = (
@@ -90,49 +99,53 @@ export default function DefaultLayout(props: Props): React.ReactElement {
     <Layout className="min-h-screen">
       <div className="w-full">
         <Header
-          className="flex justify-between items-center shadow px-[24px] bg-[rgba(125,133,139,0.2)] "
+          className="flex justify-between items-center shadow px-[24px] bg-[rgba(125,133,139,0.2)]"
           style={{
             height: "70px",
             borderBottom: "1px solid rgba(0, 0, 0, 0.1)",
           }}
         >
-          <div className="flex items-center space-x-4">
+          <div className="flex items-center justify-between space-x-4">
             <img
               src={Logo}
               className="text-xl font-bold mr-12"
               style={{ width: "108px", height: "42.14px" }}
             />
-            <Link
-              to="/orders"
-              className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
-                location.pathname === "/orders" ||
-                location.pathname === "/orders/create-order"
-                  ? `activeLinkStyle`
-                  : ""
-              }`}
-            >
-              Все заказы
-            </Link>
-            <Link
-              to="/menu-management"
-              className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
-                location.pathname === "/menu-management"
-                  ? `activeLinkStyle`
-                  : ""
-              }`}
-            >
-              Управление меню
-            </Link>
-            <Link
-              to="/orders-history"
-              className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
-                location.pathname === "/orders-history" ? `activeLinkStyle` : ""
-              }`}
-            >
-              История заказов
-            </Link>
+            <div className="hidden md:flex items-center space-x-4">
+              <Link
+                to="/orders"
+                className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                  location.pathname === "/orders" ||
+                  location.pathname === "/orders/create-order"
+                    ? `activeLinkStyle`
+                    : ""
+                }`}
+              >
+                Все заказы
+              </Link>
+              <Link
+                to="/menu-management"
+                className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                  location.pathname === "/menu-management"
+                    ? `activeLinkStyle`
+                    : ""
+                }`}
+              >
+                Управление меню
+              </Link>
+              <Link
+                to="/orders-history"
+                className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                  location.pathname === "/orders-history"
+                    ? `activeLinkStyle`
+                    : ""
+                }`}
+              >
+                История заказов
+              </Link>
+            </div>
           </div>
-          <div className="flex items-center space-x-4">
+          <div className="hidden md:flex items-center space-x-4">
             <Dropdown overlay={userMenu} trigger={["click"]}>
               <div className="flex items-center space-x-3 cursor-pointer w-[188px] h-[36px]">
                 <Avatar
@@ -150,7 +163,48 @@ export default function DefaultLayout(props: Props): React.ReactElement {
               </div>
             </Dropdown>
           </div>
+          <Button className="md:hidden bg-gray-100" onClick={showDrawer}>
+            <MenuOutlined />
+          </Button>
         </Header>
+        <Drawer
+          title="Меню"
+          placement="right"
+          onClose={closeDrawer}
+          open={drawerVisible}
+        >
+          <Link to="/orders" className="block mb-2" onClick={closeDrawer}>
+            Все заказы
+          </Link>
+          <Link
+            to="/menu-management"
+            className="block mb-2"
+            onClick={closeDrawer}
+          >
+            Управление меню
+          </Link>
+          <Link
+            to="/orders-history"
+            className="block mb-2"
+            onClick={closeDrawer}
+          >
+            История заказов
+          </Link>
+          <div className="flex items-center space-x-3 mt-4 cursor-pointer">
+            <Avatar
+              icon={<UserAvatarIcon />}
+              style={{ width: "36px", height: "36px" }}
+            />
+            <div className="flex flex-col justify-center">
+              <span className="text-[14px] leading-[16.71px] font-[SF Pro Display] font-medium text-gray-700 w-full flex items-center gap-2">
+                Солиева Лазиза <DownOutlined className="text-gray-700" />
+              </span>
+              <span className="text-[12px] leading-[14.32px] font-sans text-[#5566FF]">
+                Администратор
+              </span>
+            </div>
+          </div>
+        </Drawer>
         <Content>{children}</Content>
       </div>
     </Layout>

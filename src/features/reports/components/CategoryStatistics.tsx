@@ -62,21 +62,19 @@ const CategoryStatistics = ({ data, title }) => {
   };
 
   return (
-    <div className="bg-white w-[688px] h-[325px] p-4 rounded-[6px]">
-      <h2 className="font-sf-pro text-[18px] font-medium leading-[21px] text-left">
+    <div className="bg-white w-full max-w-[688px] h-auto p-4 rounded-[6px]">
+      <h2 className="font-sf-pro text-[18px] font-medium leading-[21px] text-left mb-4">
         Статистика по популярным категориям товаров за {title}
       </h2>
-      <div className="flex items-center w-[688px]">
-        <div>
-          <div style={{ width: 300, height: 300 }}>
-            <Pie {...config} />
-          </div>
+      <div className="flex flex-col md:flex-row items-start md:items-center w-full">
+        <div className="w-full md:w-[300px] h-[300px] mb-4 md:mb-0">
+          <Pie {...config} />
         </div>
-        <div className="flex flex-col gap-3">
+        <div className="flex flex-col gap-3 w-full md:w-[348px]">
           {data.map((item, index) => (
             <div
               key={index}
-              className="flex items-center justify-between w-[348px]"
+              className="flex items-center justify-between w-full"
             >
               <div className="flex items-center w-[150px]">
                 <span
@@ -92,11 +90,13 @@ const CategoryStatistics = ({ data, title }) => {
                   {translationMap[item.category] || item.category}
                 </Text>
               </div>
-              <Text className="w-[50px] text-[16px]">
+              <Text className="w-[50px] text-[16px] text-center">
                 {Math.round(item.percentage_quantity)}%
               </Text>
-              <Text className="w-[50px] text-[16px] ml-3">{item.count}шт</Text>
-              <Text className="w-[140px] flex items-center justify-end text-[16px]">
+              <Text className="w-[50px] text-[16px] text-center">
+                {item.count}шт
+              </Text>
+              <Text className="w-[140px] text-[16px] text-right">
                 {formatAmount(item.total_amount)} UZS
               </Text>
             </div>
