@@ -1,5 +1,5 @@
 import { Layout, Avatar, Dropdown, Menu ,Modal, Button,  Drawer } from "antd";
-import {  DownOutlined , MenuOutlined} from "@ant-design/icons";
+import { DownOutlined, MenuOutlined, UserOutlined } from "@ant-design/icons";
 import Logo from '../assets/LayoutImges/Navbar-logo.png'
 import { CustomRoute } from "../types";
 import { Link, useLocation }  from 'react-router-dom'
@@ -25,6 +25,8 @@ export default function DefaultLayout(props: Props): React.ReactElement {
   const [open, setOpen] = useState(false);
     const [drawerVisible, setDrawerVisible] = useState(false);
   const navigate = useNavigate();
+  const { user } = useAuthContext();
+   console.log(user?.full_name);
   const logout = (): void => {
     
     localStorage.removeItem("access_token");
@@ -62,26 +64,87 @@ export default function DefaultLayout(props: Props): React.ReactElement {
 
    const userMenu = (
      <Menu className="w-[250px]">
-       <Menu.Item key="reports" onClick={() => navigate("/reports")}>
-         <div className="flex items-center gap-3">
-           <ReportsIcon /> Отчеты
-         </div>
-       </Menu.Item>
-       <Menu.Item key="expenses" onClick={() => navigate("/expenses")}>
-         <div className="flex items-center gap-3 mb-2">
-           <ExpensesIcon /> Расходы
-         </div>
-       </Menu.Item>
-       <Menu.Item key="users" onClick={() => navigate("/users")}>
-         <div className="flex items-center gap-3 mb-2">
-           <UserGroupIcon /> Управление сотрудниками
-         </div>
-       </Menu.Item>
-       <Menu.Item key="logout" onClick={handleConfirm}>
-         <div className="flex items-center  gap-3 border-t border-[#ECEDEE] pt-3">
-           <ExitIcon /> Выйти с аккаунта
-         </div>
-       </Menu.Item>
+       {user?.user_type === "Admin" && (
+         <>
+           <Menu.Item key="profile" onClick={() => navigate("/profile")}>
+             <div className="flex items-center gap-5 mb-2">
+               <UserOutlined style={{ color: "blue" }} /> Профиль
+             </div>
+           </Menu.Item>
+           <Menu.Item key="reports" onClick={() => navigate("/reports")}>
+             <div className="flex items-center gap-3">
+               <ReportsIcon /> Отчеты
+             </div>
+           </Menu.Item>
+           <Menu.Item key="expenses" onClick={() => navigate("/expenses")}>
+             <div className="flex items-center gap-3 mb-2">
+               <ExpensesIcon /> Расходы
+             </div>
+           </Menu.Item>
+           <Menu.Item key="users" onClick={() => navigate("/users")}>
+             <div className="flex items-center gap-3 mb-2">
+               <UserGroupIcon /> Управление сотрудниками
+             </div>
+           </Menu.Item>
+           <Menu.Item key="logout" onClick={handleConfirm}>
+             <div className="flex items-center  gap-3 border-t border-[#ECEDEE] pt-3">
+               <ExitIcon /> Выйти с аккаунта
+             </div>
+           </Menu.Item>
+         </>
+       )}
+       {user?.user_type === "Manager" && (
+         <>
+           <Menu.Item key="profile" onClick={() => navigate("/profile")}>
+             <div className="flex items-center gap-5 mb-2">
+               <UserOutlined style={{ color: "blue" }} /> Профиль
+             </div>
+           </Menu.Item>
+           <Menu.Item key="expenses" onClick={() => navigate("/expenses")}>
+             <div className="flex items-center gap-3 mb-2">
+               <ExpensesIcon /> Расходы
+             </div>
+           </Menu.Item>
+           <Menu.Item key="users" onClick={() => navigate("/users")}>
+             <div className="flex items-center gap-3 mb-2">
+               <UserGroupIcon /> Управление сотрудниками
+             </div>
+           </Menu.Item>
+           <Menu.Item key="logout" onClick={handleConfirm}>
+             <div className="flex items-center  gap-3 border-t border-[#ECEDEE] pt-3">
+               <ExitIcon /> Выйти с аккаунта
+             </div>
+           </Menu.Item>
+         </>
+       )}
+       {user?.user_type === "Cook" && (
+         <>
+           <Menu.Item key="profile" onClick={() => navigate("/profile")}>
+             <div className="flex items-center gap-5 mb-2">
+               <UserOutlined style={{ color: "blue" }} /> Профиль
+             </div>
+           </Menu.Item>
+           <Menu.Item key="logout" onClick={handleConfirm}>
+             <div className="flex items-center  gap-3">
+               <ExitIcon /> Выйти с аккаунта
+             </div>
+           </Menu.Item>
+         </>
+       )}
+       {user?.user_type === "Seller" && (
+         <>
+           <Menu.Item key="profile" onClick={() => navigate("/profile")}>
+             <div className="flex items-center gap-5 mb-2">
+               <UserOutlined style={{ color: "blue" }} /> Профиль
+             </div>
+           </Menu.Item>
+           <Menu.Item key="logout" onClick={handleConfirm}>
+             <div className="flex items-center  gap-3 ">
+               <ExitIcon /> Выйти с аккаунта
+             </div>
+           </Menu.Item>
+         </>
+       )}
      </Menu>
    );
 
@@ -112,37 +175,84 @@ export default function DefaultLayout(props: Props): React.ReactElement {
               style={{ width: "108px", height: "42.14px" }}
             />
             <div className="hidden md:flex items-center space-x-4">
-              <Link
-                to="/orders"
-                className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
-                  location.pathname === "/orders" ||
-                  location.pathname === "/orders/create-order"
-                    ? `activeLinkStyle`
-                    : ""
-                }`}
-              >
-                Все заказы
-              </Link>
-              <Link
-                to="/menu-management"
-                className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
-                  location.pathname === "/menu-management"
-                    ? `activeLinkStyle`
-                    : ""
-                }`}
-              >
-                Управление меню
-              </Link>
-              <Link
-                to="/orders-history"
-                className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
-                  location.pathname === "/orders-history"
-                    ? `activeLinkStyle`
-                    : ""
-                }`}
-              >
-                История заказов
-              </Link>
+              {user?.user_type === "Admin" && (
+                <>
+                  <Link
+                    to="/orders"
+                    className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                      location.pathname === "/orders" ||
+                      location.pathname === "/orders/create-order"
+                        ? `activeLinkStyle`
+                        : ""
+                    }`}
+                  >
+                    Все заказы
+                  </Link>
+                  <Link
+                    to="/menu-management"
+                    className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                      location.pathname === "/menu-management"
+                        ? `activeLinkStyle`
+                        : ""
+                    }`}
+                  >
+                    Управление меню
+                  </Link>
+                  <Link
+                    to="/orders-history"
+                    className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                      location.pathname === "/orders-history"
+                        ? `activeLinkStyle`
+                        : ""
+                    }`}
+                  >
+                    История заказов
+                  </Link>
+                </>
+              )}
+              {user?.user_type === "Manager" && (
+                <>
+                  <Link
+                    to="/orders-history"
+                    className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                      location.pathname === "/orders-history"
+                        ? `activeLinkStyle`
+                        : ""
+                    }`}
+                  >
+                    История заказов
+                  </Link>
+                </>
+              )}
+              {user?.user_type === "Cook" && (
+                <>
+                  <Link
+                    to="/menu-management"
+                    className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                      location.pathname === "/menu-management"
+                        ? `activeLinkStyle`
+                        : ""
+                    }`}
+                  >
+                    Управление меню
+                  </Link>
+                </>
+              )}
+              {user?.user_type === "Seller" && (
+                <>
+                  <Link
+                    to="/orders"
+                    className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                      location.pathname === "/orders" ||
+                      location.pathname === "/orders/create-order"
+                        ? `activeLinkStyle`
+                        : ""
+                    }`}
+                  >
+                    Все заказы
+                  </Link>
+                </>
+              )}
             </div>
           </div>
           <div className="hidden md:flex items-center space-x-4">
@@ -154,7 +264,7 @@ export default function DefaultLayout(props: Props): React.ReactElement {
                 />
                 <div className="flex flex-col justify-center">
                   <span className="text-[14px] leading-[16.71px] font-[SF Pro Display] font-medium text-gray-700 w-full flex items-center gap-2">
-                    Солиева Лазиза <DownOutlined className="text-gray-700" />
+                    {user?.full_name} <DownOutlined className="text-gray-700" />
                   </span>
                   <span className="text-[12px] leading-[14.32px] font-sans text-[#5566FF]">
                     Администратор
@@ -197,7 +307,7 @@ export default function DefaultLayout(props: Props): React.ReactElement {
             />
             <div className="flex flex-col justify-center">
               <span className="text-[14px] leading-[16.71px] font-[SF Pro Display] font-medium text-gray-700 w-full flex items-center gap-2">
-                Солиева Лазиза <DownOutlined className="text-gray-700" />
+                {user?.full_name} <DownOutlined className="text-gray-700" />
               </span>
               <span className="text-[12px] leading-[14.32px] font-sans text-[#5566FF]">
                 Администратор

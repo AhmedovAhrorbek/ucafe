@@ -1,15 +1,17 @@
 import { useState } from "react";
 import { Button, Modal, Form, Input, Select, Switch, Row, Col } from "antd";
 import AddCircle from "../../../orders/assets/add-circle.png";
-import { useMutation, useQueryClient } from "@tanstack/react-query";
-import { createUser } from "../../api";
-// import UserListCard from "../../components/UserListCard";
-import { formatPhoneNumber } from "../../helpers";
+import { useMutation, useQueryClient , useQuery} from "@tanstack/react-query";
+import { createUser, getUsers } from "../../api";
+import UserListCard from "../../components/UserListCard";
+// import { formatPhoneNumber } from "../../helpers";
+import { UserType } from "../../types";
+// import { type } from '../../../orders/types/index';
 const Users = () => {
   const queryClient = useQueryClient();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  const [phoneNumber, setPhoneNumber] = useState("");
-  console.log(phoneNumber);
+  // const [phoneNumber, setPhoneNumber] = useState("");
+  // console.log(phoneNumber);
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -31,13 +33,17 @@ const Users = () => {
   };
    
 
-   const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-     const rawValue = e.target.value;
-     const formattedNumber = formatPhoneNumber(rawValue);
-     setPhoneNumber(formattedNumber);
-   };
-
-  
+  //  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+  //    const rawValue = e.target.value;
+  //    const formattedNumber = formatPhoneNumber(rawValue);
+  //    setPhoneNumber(formattedNumber);
+  //  };
+   
+   const { data: users } = useQuery<UserType[]>({
+     queryKey: ["users"],
+     queryFn: getUsers,
+   });
+    // console.log(users);
 
   return (
     <div>
@@ -54,7 +60,17 @@ const Users = () => {
           Новый сотрудник
         </Button>
       </div>
-      {/* <div><UserListCard /></div> */}
+      <div className="mt-5">
+        {users?.map((user) => (
+          <UserListCard
+            key={user.id}
+            username={user?.username}
+            full_name={user?.full_name}
+            type={user?.type}
+            is_active={user?.is_active}
+          />
+        ))}
+      </div>
       <Modal
         title="Добавить сотрудника"
         open={isModalVisible}
@@ -121,21 +137,21 @@ const Users = () => {
             <Col span={12}>
               <Form.Item
                 name="phone_number"
-                label="Phone Number"
+                label="Номер телефона"
                 rules={[
                   {
                     required: true,
                     message: "Please input your phone number!",
                   },
                   {
-                    pattern: /^\+998 \d{2} \d{3} \d{2} \d{2}$/,
-                    message: "Phone number format is invalid!",
+                    // pattern: /^\+998 \d{2} \d{3} \d{2} \d{2}$/,
+                    // message: "Phone number format is invalid!",
                   },
                 ]}
               >
                 <Input
-                  value={phoneNumber}
-                  onChange={handlePhoneNumberChange}
+                  // value={phoneNumber}
+                  // onChange={handlePhoneNumberChange}
                   placeholder="+998 __ ___ __ __"
                 />
               </Form.Item>
@@ -143,18 +159,13 @@ const Users = () => {
             <Col span={12}>
               <Form.Item
                 name="salary"
-                label="Salary"
+                label="Зарплата"
                 rules={[
                   { required: true, message: "Please input your salary!" },
-                  { type: "number", message: "Salary must be a number!" },
+                  // { type: "number", message: "Salary must be a number!" },
                 ]}
               >
-                <Input
-                  type="number"
-                  placeholder="Enter salary"
-                  min={0}
-                  step="0.01"
-                />
+                <Input type="number"/>
               </Form.Item>
             </Col>
           </Row>

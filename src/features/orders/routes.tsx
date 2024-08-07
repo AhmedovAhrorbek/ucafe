@@ -18,12 +18,6 @@ const allOrdersRoutes: CustomRoute = {
       path: "create-order",
       element: <CreateOrder />,
     },
-    {
-      id: "edit-order",
-      title: "edit-order",
-      path: "edit-order/:id",
-      element: <CreateOrder />,
-    },
   ],
 };
 

@@ -20,12 +20,12 @@ request.interceptors.response.use((response)=>response.data, errorHandler);
 
 export async function errorHandler(error: AxiosError):Promise<void>{
     if(error.response !== null){
-        if(error.response?.status === 403){
+        if(error.response?.status === 403 || error.response?.status === 401){
             const rToken = localStorage.getItem("refresh_token");
             if(rToken !== null){
                 try {
                     const res = await refreshToken({refresh:rToken});
-                    const { refresh, access } = res.data;
+                    const { refresh, access} = res.data;
                     localStorage.setItem("refresh_token", refresh);
                     localStorage.setItem("access_token", access);
                 } catch (err) {

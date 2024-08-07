@@ -17,8 +17,12 @@ const Login: React.FC = () => {
   const { mutate } = useMutation({
     mutationFn: login,
     onSuccess: (res) => {
+      // console.log(res)
       localStorage.setItem("refresh_token", res.refresh);
       localStorage.setItem("access_token", res.access);
+      localStorage.setItem("user", JSON.stringify(res.user));
+      // console.log(res.user)
+      // setUser(res.user)
       setIsAuth(true);
       navigate("/");
       window.location.reload();

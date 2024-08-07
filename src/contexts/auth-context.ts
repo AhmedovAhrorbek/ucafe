@@ -1,24 +1,35 @@
-import { createContext, useContext } from "react";
+import  { createContext, useContext } from "react";
 import type { Dispatch, SetStateAction } from "react";
 
-interface AuthContext {
-    isAuth:boolean,
-    setIsAuth: Dispatch<SetStateAction<boolean>>;
+interface User {
+  full_name: string;
+  username: string;
+  user_type: string;
+  phone_number: string;
+  salary: number;
+  date_joined: string;
 }
 
-const authContext = createContext<AuthContext>({
-    isAuth: false,
-    setIsAuth: () => {
+interface AuthContextProps {
+  isAuth: boolean;
+  user: User | null;
+  setIsAuth: Dispatch<SetStateAction<boolean>>;
+  setUser: Dispatch<SetStateAction<User | null>>;
+}
 
-    },
+const authContext = createContext<AuthContextProps>({
+  isAuth: false,
+  user: null,
+  setIsAuth: () => {},
+  setUser: () => {},
 });
 
-authContext.displayName = "authContext";
+authContext.displayName = "AuthContext";
 
 const AuthContextConsumer = authContext.Consumer;
 
-export { AuthContextConsumer as AuthConsumer, authContext, useAuthContext};
+export { AuthContextConsumer as AuthConsumer, authContext, useAuthContext };
 
-function useAuthContext():React.ContextType<React.Context<AuthContext>>{
-    return useContext(authContext);
+function useAuthContext(): AuthContextProps {
+  return useContext(authContext);
 }
