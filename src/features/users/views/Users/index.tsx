@@ -1,17 +1,18 @@
 import { useState } from "react";
 import { Button, Modal, Form, Input, Select, Switch, Row, Col } from "antd";
 import AddCircle from "../../../orders/assets/add-circle.png";
-import { useMutation, useQueryClient , useQuery} from "@tanstack/react-query";
+import { useMutation, useQueryClient, useQuery } from "@tanstack/react-query";
 import { createUser, getUsers } from "../../api";
 import UserListCard from "../../components/UserListCard";
-// import { formatPhoneNumber } from "../../helpers";
-import { UserType } from "../../types";
-// import { type } from '../../../orders/types/index';
+// import { UserType } from "../../types";
+import Pagination from "../../../../components/Pagination";
+
 const Users = () => {
   const queryClient = useQueryClient();
   const [isModalVisible, setIsModalVisible] = useState(false);
-  // const [phoneNumber, setPhoneNumber] = useState("");
-  // console.log(phoneNumber);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(2);
+
   const showModal = () => {
     setIsModalVisible(true);
   };
@@ -28,22 +29,19 @@ const Users = () => {
     },
   });
 
-  const onFinish = (values) => {
+  const onFinish = (values: any) => {
     mutation.mutate(values);
   };
-   
 
-  //  const handlePhoneNumberChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-  //    const rawValue = e.target.value;
-  //    const formattedNumber = formatPhoneNumber(rawValue);
-  //    setPhoneNumber(formattedNumber);
-  //  };
-   
-   const { data: users } = useQuery<UserType[]>({
-     queryKey: ["users"],
-     queryFn: getUsers,
-   });
-    // console.log(users);
+  const { data } = useQuery({
+    queryKey: ["users", { page: currentPage, pageSize }],
+    queryFn: () => getUsers({ page: currentPage, pageSize }),
+    keepPreviousData: true,
+  });
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
 
   return (
     <div>
@@ -61,16 +59,25 @@ const Users = () => {
         </Button>
       </div>
       <div className="mt-5">
-        {users?.map((user) => (
+        {data && data?.results && data?.results.map((user) => (
           <UserListCard
-            key={user.id}
+            key={user?.id}
+            id={user?.id}
             username={user?.username}
             full_name={user?.full_name}
-            type={user?.type}
+            user_type={user?.user_type}
             is_active={user?.is_active}
+            phone_number={user?.phone_number}
+            salary={user?.salary}
           />
         ))}
       </div>
+      <Pagination
+        currentPage={currentPage}
+        totalItems={data?.count || 0}
+        pageSize={pageSize}
+        onPageChange={handlePageChange}
+      />
       <Modal
         title="Добавить сотрудника"
         open={isModalVisible}
@@ -106,7 +113,7 @@ const Users = () => {
           <Row gutter={16}>
             <Col span={12}>
               <Form.Item
-                name="type"
+                name="user_type"
                 label="Тип"
                 rules={[{ required: true, message: "Please select the type!" }]}
               >
@@ -143,17 +150,9 @@ const Users = () => {
                     required: true,
                     message: "Please input your phone number!",
                   },
-                  {
-                    // pattern: /^\+998 \d{2} \d{3} \d{2} \d{2}$/,
-                    // message: "Phone number format is invalid!",
-                  },
                 ]}
               >
-                <Input
-                  // value={phoneNumber}
-                  // onChange={handlePhoneNumberChange}
-                  placeholder="+998 __ ___ __ __"
-                />
+                <Input placeholder="+998 __ ___ __ __" />
               </Form.Item>
             </Col>
             <Col span={12}>
@@ -162,10 +161,9 @@ const Users = () => {
                 label="Зарплата"
                 rules={[
                   { required: true, message: "Please input your salary!" },
-                  // { type: "number", message: "Salary must be a number!" },
                 ]}
               >
-                <Input type="number"/>
+                <Input type="number" />
               </Form.Item>
             </Col>
           </Row>

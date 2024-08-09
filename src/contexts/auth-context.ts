@@ -2,12 +2,14 @@ import  { createContext, useContext } from "react";
 import type { Dispatch, SetStateAction } from "react";
 
 interface User {
+  id:number;
   full_name: string;
   username: string;
   user_type: string;
   phone_number: string;
   salary: number;
-  date_joined: string;
+  last_login?:string;
+  date_joined?: string;
 }
 
 interface AuthContextProps {

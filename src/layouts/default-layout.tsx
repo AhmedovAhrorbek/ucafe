@@ -23,10 +23,10 @@ export default function DefaultLayout(props: Props): React.ReactElement {
   const { children} = props;
   const { setIsAuth } = useAuthContext();
   const [open, setOpen] = useState(false);
-    const [drawerVisible, setDrawerVisible] = useState(false);
+  const [drawerVisible, setDrawerVisible] = useState(false);
   const navigate = useNavigate();
   const { user } = useAuthContext();
-   console.log(user?.full_name);
+  //  console.log(user?.full_name);
   const logout = (): void => {
     
     localStorage.removeItem("access_token");
@@ -283,36 +283,101 @@ export default function DefaultLayout(props: Props): React.ReactElement {
           onClose={closeDrawer}
           open={drawerVisible}
         >
-          <Link to="/orders" className="block mb-2" onClick={closeDrawer}>
-            Все заказы
-          </Link>
-          <Link
-            to="/menu-management"
-            className="block mb-2"
-            onClick={closeDrawer}
-          >
-            Управление меню
-          </Link>
-          <Link
-            to="/orders-history"
-            className="block mb-2"
-            onClick={closeDrawer}
-          >
-            История заказов
-          </Link>
+          {user?.user_type === "Admin" && (
+            <>
+              <Link
+                to="/orders"
+                className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                  location.pathname === "/orders" ||
+                  location.pathname === "/orders/create-order"
+                    ? `activeLinkStyle`
+                    : ""
+                }`}
+              >
+                Все заказы
+              </Link>
+              <Link
+                to="/menu-management"
+                className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                  location.pathname === "/menu-management"
+                    ? `activeLinkStyle`
+                    : ""
+                }`}
+              >
+                Управление меню
+              </Link>
+              <Link
+                to="/orders-history"
+                className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                  location.pathname === "/orders-history"
+                    ? `activeLinkStyle`
+                    : ""
+                }`}
+              >
+                История заказов
+              </Link>
+            </>
+          )}
+          {user?.user_type === "Manager" && (
+            <>
+              <Link
+                to="/orders-history"
+                className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                  location.pathname === "/orders-history"
+                    ? `activeLinkStyle`
+                    : ""
+                }`}
+              >
+                История заказов
+              </Link>
+            </>
+          )}
+          {user?.user_type === "Cook" && (
+            <>
+              <Link
+                to="/menu-management"
+                className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                  location.pathname === "/menu-management"
+                    ? `activeLinkStyle`
+                    : ""
+                }`}
+              >
+                Управление меню
+              </Link>
+            </>
+          )}
+          {user?.user_type === "Seller" && (
+            <>
+              <Link
+                to="/orders"
+                className={`linkStyle font-sans text-[16px] font-medium leading-[19.09px] text-left ${
+                  location.pathname === "/orders" ||
+                  location.pathname === "/orders/create-order"
+                    ? `activeLinkStyle`
+                    : ""
+                }`}
+              >
+                Все заказы
+              </Link>
+            </>
+          )}
           <div className="flex items-center space-x-3 mt-4 cursor-pointer">
-            <Avatar
-              icon={<UserAvatarIcon />}
-              style={{ width: "36px", height: "36px" }}
-            />
-            <div className="flex flex-col justify-center">
-              <span className="text-[14px] leading-[16.71px] font-[SF Pro Display] font-medium text-gray-700 w-full flex items-center gap-2">
-                {user?.full_name} <DownOutlined className="text-gray-700" />
-              </span>
-              <span className="text-[12px] leading-[14.32px] font-sans text-[#5566FF]">
-                Администратор
-              </span>
-            </div>
+            <Dropdown overlay={userMenu} trigger={["click"]}>
+              <div className="flex items-center space-x-3 cursor-pointer w-[188px] h-[36px]">
+                <Avatar
+                  icon={<UserAvatarIcon />}
+                  style={{ width: "36px", height: "36px" }}
+                />
+                <div className="flex flex-col justify-center">
+                  <span className="text-[14px] leading-[16.71px] font-[SF Pro Display] font-medium text-gray-700 w-full flex items-center gap-2">
+                    {user?.full_name} <DownOutlined className="text-gray-700" />
+                  </span>
+                  <span className="text-[12px] leading-[14.32px] font-sans text-[#5566FF]">
+                    Администратор
+                  </span>
+                </div>
+              </div>
+            </Dropdown>
           </div>
         </Drawer>
         <Content>{children}</Content>

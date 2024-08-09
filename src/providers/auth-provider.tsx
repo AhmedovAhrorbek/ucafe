@@ -1,7 +1,7 @@
-import { useState, useMemo } from "react";
+import React, { useState, useEffect, useMemo } from "react";
 import { authContext } from "../contexts/auth-context";
-import { useEffect } from "react";
-import { User }  from '../types'
+import { User } from "../types";
+
 interface Props {
   children: React.ReactElement;
 }
@@ -9,19 +9,26 @@ interface Props {
 const accessToken = localStorage.getItem("access_token");
 const storedUser = localStorage.getItem("user");
 
-export default function AuthProvider(props: Props): React.ReactElement {
-  const { children } = props;
-
+const AuthProvider: React.FC<Props> = ({ children }) => {
   const [isAuth, setIsAuth] = useState<boolean>(Boolean(accessToken));
-  const [user, setUser] = useState<User | null>(null);
+  const [user, setUser] = useState<User | null>(
+    storedUser ? JSON.parse(storedUser) : null
+  );
 
   useEffect(() => {
-    if (storedUser) {
-      setUser(JSON.parse(storedUser));
+    if (user) {
+      localStorage.setItem("user", JSON.stringify(user));
+    } else {
+      localStorage.removeItem("user");
     }
-  }, []);
+  }, [user]);
 
-    const value = useMemo(() => ({ isAuth, user, setIsAuth, setUser }),[isAuth, user]);
+  const value = useMemo(
+    () => ({ isAuth, user, setIsAuth, setUser }),
+    [isAuth, user]
+  );
 
   return <authContext.Provider value={value}>{children}</authContext.Provider>;
-}
+};
+
+export default AuthProvider;

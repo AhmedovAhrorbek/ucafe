@@ -1,5 +1,5 @@
 import React, { useEffect, useState, useReducer } from "react";
-import { Button, List, Select, message } from "antd";
+import { Button, List, Select, message, InputNumber, Modal } from "antd";
 import { useNavigate } from "react-router-dom";
 import arrowLeftIcon from "../../assets/arrow-left-02-round.png";
 // import { produce } from "immer";
@@ -14,7 +14,7 @@ import ChocolateIcon from "../../../../components/snackIcon";
 import BrocoliIcon from "../../../../components/ppIcon";
 import CakeIcon from "../../../../components/dessertIcon";
 import type { Food } from "../../types";
-import { PlusOutlined } from '@ant-design/icons';
+import { PlusOutlined, MinusCircleOutlined } from "@ant-design/icons";
 import formatAmount from '../../../../helpers/format-amount';
 import CartItem from "../../components/CartItem";
 import { cartReducer } from "./store";
@@ -49,6 +49,9 @@ const CreateOrder: React.FC = () => {
     const [payType, setPayType] = useState<string>("cash");
     const [orderType, setOrderType] = useState<string>("delivery");
     const [payStatusType, setPayStatusType] = useState<string>("paid")
+    const [mixedPayment, setMixedPayment] = useState(false);
+    const [payments, setPayments] = useState([]);
+
   useEffect(() => {
     fetchFoods();
   }, []);
@@ -117,10 +120,55 @@ const CreateOrder: React.FC = () => {
   const filteredFoods = foods.filter(
     (food) => food.category === selectedCategory
   );
+    
+  const handleRemovePayment = (index) => {
+    const updatedPayments = payments.filter((_, i) => i !== index);
+    setPayments(updatedPayments);
+  };
+
+   const handleMixedPayment = () => {
+    setMixedPayment(true);
+     setPayments([...payments, { type: "", amount: 0 }]);
+   };
+
+  const handlePaymentChange = (index: number, field: string, value: any) => {
+    const newPayments = [...payments];
+    newPayments[index][field] = value;
+    setPayments(newPayments);
+  };
+
+ const handleCheckAndSubmit = () => {
+   const totalSum = carts[activeCart]?.items.reduce(
+     (total, item) => total + item.price * item.count,
+     0
+   );
+   const totalPayments = payments.reduce(
+     (total, payment) => total + payment.amount,
+     0
+   );
+
+   if (totalPayments === totalSum) {
+     // Agar to'lovlar yig'indisi mahsulotlar narxlarining yig'indisiga teng bo'lsa
+     handlePayment();
+   } else if (totalPayments > totalSum) {
+     // Agar to'lovlar yig'indisi mahsulotlar narxlaridan ortiqcha bo'lsa
+     message.error("Siz ortiqcha summa kirityapsiz!");
+   } else {
+     // Agar to'lovlar yig'indisi mahsulotlar narxlaridan kam bo'lsa
+     Modal.confirm({
+       title: "Diqqat!",
+       content: "Siz chetdan narsa olmoqchimisiz?",
+       onOk: handlePayment,
+     });
+   }
+ };
 
     const handlePayment = async () => {
-       orderCreation.mutate({
-        pay_type: payType,
+      orderCreation.mutate({
+        payments: payments.map((payment) => ({
+          pay_type: payment.type,
+          price: payment.amount,
+        })),
         status: "new",
         order_type: orderType,
         items: carts[activeCart].items.map((item) => ({
@@ -128,7 +176,8 @@ const CreateOrder: React.FC = () => {
           quantity: item.count,
         })),
         status_pay: payStatusType,
-      })
+        discount: 0,
+      });
     };
 
   return (
@@ -279,16 +328,51 @@ const CreateOrder: React.FC = () => {
             <div className="w-full flex flex-col gap-2 mt-2  bg-[#F5F5F5] px-12 py-2 rounded-t-[12px] ">
               <div className="flex items-center justify-between">
                 <p> Способ оплаты</p>
-                <Select
-                  defaultValue="cash"
-                  style={{ width: 120 }}
-                  onChange={(value) => setPayType(value)}
-                >
-                  <Select.Option value="cash">наличные</Select.Option>
-                  <Select.Option value="payme">payme</Select.Option>
-                  <Select.Option value="click">click</Select.Option>
-                  <Select.Option value="terminal">Терминал</Select.Option>
-                </Select>
+                <div>
+                  {!mixedPayment ? (
+                    <Select
+                      defaultValue="cash"
+                      style={{ width: 120 }}
+                      onChange={(value) => setPayType(value)}
+                    >
+                      <Select.Option value="cash">Наличные</Select.Option>
+                      <Select.Option value="payme">Payme</Select.Option>
+                      <Select.Option value="click">Click</Select.Option>
+                      <Select.Option value="terminal">Терминал</Select.Option>
+                    </Select>
+                  ) : (
+                    payments.map((payment, index) => (
+                      <div key={index} className="mb-2">
+                        <Select
+                          style={{ width: 120, marginRight: 8 }}
+                          value={payment.type}
+                          onChange={(value) =>
+                            handlePaymentChange(index, "type", value)
+                          }
+                        >
+                          <Select.Option value="cash">Наличные</Select.Option>
+                          <Select.Option value="payme">Payme</Select.Option>
+                          <Select.Option value="click">Click</Select.Option>
+                          <Select.Option value="terminal">
+                            Терминал
+                          </Select.Option>
+                        </Select>
+                        <InputNumber
+                          min={0}
+                          value={payment.amount}
+                          onChange={(value) =>
+                            handlePaymentChange(index, "amount", value)
+                          }
+                        />
+                        <MinusCircleOutlined
+                          onClick={() => handleRemovePayment(index)}
+                          style={{ color: "red", marginTop: 5 }}
+                        />
+                      </div>
+                    ))
+                  )}
+                  <Button onClick={handleMixedPayment}>Смешанная оплата</Button>
+                </div>
               </div>
               <div className="flex items-center justify-between">
                 <p>Тип заказа</p>
@@ -328,7 +412,7 @@ const CreateOrder: React.FC = () => {
               className="w-full mt-3 flex items-center gapr-2"
               type="primary"
               size="large"
-              onClick={handlePayment}
+              onClick={handleCheckAndSubmit}
             >
               Создавать
             </Button>

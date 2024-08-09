@@ -1,10 +1,9 @@
+import React, { useEffect } from "react";
 import Root from "../views/root";
 import NotFound from "../views/not-found";
 import InternalServerError from "../views/internet-server-error";
 import authRoutes from "../features/auth/routes";
 import { allOrdersRoutes } from "../features/orders";
-import type { CustomRoute } from "../types";
-import { sift } from "radash";
 import { ordersHistoryRoutes } from "../features/order-history";
 import { menuManagmentRoutes } from "../features/menu-managment";
 import userProfileRoutes from "../features/profiles/routes";
@@ -13,9 +12,17 @@ import { ExpensesRoutes } from "../features/expenses";
 import { Navigate } from "react-router-dom";
 import UsersRoutes from "../features/users/routes";
 import { useAuthContext } from "../contexts/auth-context";
+import type { CustomRoute } from "../types";
+import { sift } from "radash";
 
 const useFilteredRoutes = (): CustomRoute[] => {
   const { user } = useAuthContext();
+
+  // useEffect(() => {
+  //   console.log("User in useFilteredRoutes:", user); // Tekshirish uchun
+  // }, [user]);
+  
+  
 
   let filteredChildren: CustomRoute[] = [];
   let homepageRedirect: JSX.Element;
@@ -46,7 +53,6 @@ const useFilteredRoutes = (): CustomRoute[] => {
         ExpensesRoutes,
         UsersRoutes,
         userProfileRoutes,
-
         {
           id: "local-not-found",
           title: "not-found",
@@ -60,7 +66,6 @@ const useFilteredRoutes = (): CustomRoute[] => {
       filteredChildren = sift([
         menuManagmentRoutes,
         userProfileRoutes,
-
         {
           id: "local-not-found",
           title: "not-found",
